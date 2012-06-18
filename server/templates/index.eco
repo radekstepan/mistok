@@ -9,6 +9,30 @@
         <link rel="stylesheet" type="text/css" href="/css/style.less.css">
 
         <script src="/js/jquery.min.js"></script>
+        <script src="/js/mynd.min.js"></script>
+
+        <script>
+        $(function() {
+            var data = [];
+            for (x = 0; x < 20; x++) {
+                data.push({
+                    'description': '6/'+x,
+                    'data': [
+                        Math.floor(Math.random() * 11),
+                        Math.floor(Math.random() * 11)
+                    ]
+                })
+            }
+
+            (new Mynd.Chart.column({
+                'el':        $('article#chart div.svg'),
+                'data':      data,
+                'width':     726,
+                'height':    200,
+                'isStacked': true
+            })).render();
+        });
+        </script>
     </head>
     <body>
         <header id="top">
@@ -36,6 +60,8 @@
                         <div class="float left">
                             <article id="chart">
                                 <header><h3>Overview</h3><hr></header>
+
+                                <div class="svg"></div>
                             </article>
                             
                             <article id="exceptions">
