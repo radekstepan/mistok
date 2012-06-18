@@ -1,0 +1,14 @@
+{
+    "name": "mistök"
+  , "version": "0.0.1"
+  , "private": true
+  , "dependencies": {
+      "should":        "latest",
+      "mocha":         "latest",
+      "eco":           "latest",
+      "less":          "latest",
+      "colors":        "latest",
+      "mime":          "latest",
+      "coffee-script": "latest"
+  }
+}
