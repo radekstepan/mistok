@@ -53,8 +53,14 @@
                                     <tbody>
                                         <tr>
                                             <td>1</td>
-                                            <td>Chrome</td>
-                                            <td>Uncaught Error: this is not happening!<span>http://localhost:1115/ line 73</span></td>
+                                            <td><span class="browser big chrome"></span></td>
+                                            <td>
+                                                Uncaught Error: this is not happening!
+                                                <ul>
+                                                    <li>http://localhost:1115/</li>
+                                                    <li>line 73</li>
+                                                </ul>
+                                            </td>
                                             <td>&hellip;</td>
                                         </tr>
                                     </tbody>
@@ -116,15 +122,15 @@
                                 <tbody>
                                     <tr>
                                         <td>3 AM on 06/08</td>
-                                        <td><span class="exception">Exception</span></td>
-                                        <td>Chrome</td>
+                                        <td><span class="type exception">Exception</span></td>
+                                        <td><span class="browser small firefox"></span></td>
                                         <td>Uncaught Error: this is not happening! at http://localhost:1115/ on line 73</td>
                                         <td>&hellip;</td>
                                     </tr>
                                     <tr>
                                         <td>3 AM on 06/08</td>
-                                        <td><span class="message">Message</span></td>
-                                        <td>Chrome</td>
+                                        <td><span class="type message">Message</span></td>
+                                        <td><span class="browser small opera"></span></td>
                                         <td>Hello World!</td>
                                         <td>&hellip;</td>
                                     </tr>

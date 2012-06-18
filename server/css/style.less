@@ -4,7 +4,7 @@
 
 #top { background:#1A1A1A; color:#999; padding:10px 0;
     #logo { background:url('../img/logo.png') no-repeat top left; display:block; width:112px; height:29px; }
-    nav { float:right;
+    nav { float:right; margin-top:4px;
         ul {
             li { display:inline;
                 &:not(:first-child) { margin-left:10px; }
@@ -44,4 +44,67 @@
             }
         }
     }
+}
+
+#exceptions {
+    table {
+        ul { list-style-type:none; color:#999; margin:0;
+            li { display:inline;
+                &:not(:first-child) { margin-left:20px; }
+            }
+        }
+    }
+}
+
+#stats {
+    table {
+        span { color:#999; }
+    }
+}
+
+.browser { background-repeat:no-repeat; display:inline-block;
+    &.big { width:32px; height:32px; background-image:url('../img/browsers-32px.png');
+        &:after { margin:9px 0 0 36px; display:block; font-size:10px; }
+        
+        &.chrome { background-position:-2px 0;
+            &:after { content:'Chrome'; }
+        }
+        &.firefox { background-position:-38px 0;
+            &:after { content:'Firefox'; }
+        }
+        &.opera { background-position:-74px 0;
+            &:after { content:'Opera'; }
+        }
+        &.safari { background-position:-108px 0;
+            &:after { content:'Safari'; }
+        }
+        &.explorer { background-position:-142px 0;
+            &:after { content:'Explorer'; }
+        }
+    }
+    &.small { width:16px; height:16px; background-image:url('../img/browsers-16px.png');
+        &:after { margin:0px 0 0 20px; display:block; font-size:10px; }
+
+        &.chrome { background-position:-2px 0;
+            &:after { content:'Chrome'; }
+        }
+        &.firefox { background-position:-20px 0;
+            &:after { content:'Firefox'; }
+        }
+        &.opera { background-position:-37px 0;
+            &:after { content:'Opera'; }
+        }
+        &.safari { background-position:-54px 0;
+            &:after { content:'Safari'; }
+        }
+        &.explorer { background-position:-70px 0;
+            &:after { content:'Explorer'; }
+        }
+    }
+}
+
+.type {
+    &:before { content:'\0000a0'; display:inline-block; margin-right:10px; width:10px; height:10px; }
+    &.exception:before { background:#FF7272; }
+    &.message:before { background:#5F97FF; }
 }
