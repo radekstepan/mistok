@@ -5,10 +5,135 @@
 
         <title>Mistök</title>
 
-        <link rel="stylesheet" type="text/css" href="/css/reset.css" />
+        <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
         <link rel="stylesheet" type="text/css" href="/css/style.less.css">
 
         <script src="/js/jquery.min.js"></script>
     </head>
-    <body></body>
+    <body>
+        <header id="top">
+            <div class="wrapper">
+                <nav>
+                    <ul>
+                        <li><a>Documentation</a></li>
+                        <li><a>Dashboard</a></li>
+                        <li><a>Account</a></li>
+                        <li><a>Logout</a></li>
+                    </ul>
+                </nav>
+                <a id="logo" href="/"></a>
+            </div>
+        </header>
+
+        <div id="main">
+            <div class="wrapper">
+                <div class="box">
+                    <div class="top">
+                        <h2>localhost</h2>
+                    </div>
+                    
+                    <div id="content">
+                        <div class="float left">
+                            <article id="chart">
+                                <header><h3>Overview</h3><hr></header>
+                            </article>
+                            
+                            <article id="exceptions">
+                                <header><h3>Exceptions over last 14 days</h3><hr></header>
+
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Browsers</th>
+                                            <th>Body</th>
+                                            <th>Sort</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>Chrome</td>
+                                            <td>Uncaught Error: this is not happening!<span>http://localhost:1115/ line 73</span></td>
+                                            <td>&hellip;</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </article>
+                        </div>
+                        
+                        <div class="float right">
+                            <article id="stats">
+                                <header><h3>Statistics</h3><hr></header>
+
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Log type</th>
+                                            <th>Today</th>
+                                            <th>Mean</th>
+                                            <th>Median</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Errors</td>
+                                            <td>0 <span>(+0)</span></td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Messages</td>
+                                            <td>0 <span>(+0)</span></td>
+                                            <td>0</td>
+                                            <td>0</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </article>
+
+                            <article id="email">
+                                <header><h3>Email Notifiers</h3><hr></header>
+                            </article>
+                            
+                            <article id="whitelist">
+                                <header><h3>Whitelist Regexps</h3><hr></header>
+                            </article>
+                        </div>
+
+                        <article id="logs" class="float full">
+                            <header><h3>Full Logs</h3><hr></header>
+
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Type</th>
+                                        <th>Browser</th>
+                                        <th colspan="2">Body</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>3 AM on 06/08</td>
+                                        <td><span class="exception">Exception</span></td>
+                                        <td>Chrome</td>
+                                        <td>Uncaught Error: this is not happening! at http://localhost:1115/ on line 73</td>
+                                        <td>&hellip;</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3 AM on 06/08</td>
+                                        <td><span class="message">Message</span></td>
+                                        <td>Chrome</td>
+                                        <td>Hello World!</td>
+                                        <td>&hellip;</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>
