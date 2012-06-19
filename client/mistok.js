@@ -12,7 +12,7 @@
       var _ref;
       if (typeof obj === "string") {
         obj = {
-          type: "Message",
+          type: 'message',
           body: obj
         };
       }
@@ -48,12 +48,12 @@
       window.onerror = function(msg, url, line) {
         var data;
         data = {
-          type: 'Exception',
+          type: 'exception',
           body: msg != null ? msg : 'No message'
         };
         data.url = url != null ? url : '';
         data.line = line != null ? line : '';
-        return Mistok.log(data);
+        return _this.log(data);
       };
     }
 

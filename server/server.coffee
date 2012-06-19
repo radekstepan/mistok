@@ -15,10 +15,10 @@ log = (error, response) ->
     response.end()
 
 # Eco template rendering.
-render = (request, response, path, data={}) ->
+render = (request, response, filename, data={}) ->
     console.log "#{request.method} #{request.url}".bold
 
-    fs.readFile "./server/templates/#{path}.eco", "utf8", (err, template) ->
+    fs.readFile "./server/templates/#{filename}.eco", "utf8", (err, template) ->
         return log err, response if err
 
         resource = eco.render template, data
@@ -50,7 +50,7 @@ server = http.createServer (request, response) ->
     if request.method is 'GET'
         switch request.url.split('?')[0]
             when '/'
-                render request, response, 'dashboard'
+                render request, response, 'dashboard', 'log': messages._docs
             when '/documentation'
                 render request, response, 'documentation'
             when '/message'
