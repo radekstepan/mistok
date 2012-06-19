@@ -24,6 +24,7 @@
       }
       obj.key = this.key;
       obj.url = (_ref = obj.url) != null ? _ref : document.URL;
+      obj.browser = this.browser;
       return $.ajax({
         url: 'http://0.0.0.0:1116/message',
         data: obj,
@@ -45,6 +46,23 @@
 
     function Mistok() {
       var _this = this;
+      this.browser = (function() {
+        if ($.browser.webkit) {
+          if (!!window.chrome) {
+            return 'chrome';
+          } else {
+            return 'safari';
+          }
+        } else if ($.browser.firefox) {
+          return 'firefox';
+        } else if ($.browser.msie) {
+          return 'explorer';
+        } else if ($.browser.opera) {
+          return 'opera';
+        } else {
+          return 'unknown';
+        }
+      })();
       window.onerror = function(msg, url, line) {
         var data;
         data = {
