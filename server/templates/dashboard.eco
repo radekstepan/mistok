@@ -145,7 +145,7 @@
                                 <tbody>
                                     <% for timestamp, message of @log: %>
                                         <tr>
-                                            <td><%= new Date(timestamp).toUTCString() %></td>
+                                            <td><%= new Date(parseInt(timestamp)).toUTCString() %></td>
                                             <td><span class="type <%= message.type %>"><%= message.type %></span></td>
                                             <td><span class="browser small <%= message.browser %>"></span></td>
                                             <td>
@@ -157,20 +157,6 @@
                                             <td>&hellip;</td>
                                         </tr>
                                     <% end %>
-                                    <tr>
-                                        <td>3 AM on 06/08</td>
-                                        <td><span class="type exception">Exception</span></td>
-                                        <td><span class="browser small firefox"></span></td>
-                                        <td>Uncaught Error: this is not happening! at <span class="url">http://localhost:1115/</span> on line <span class="line">73</span></td>
-                                        <td>&hellip;</td>
-                                    </tr>
-                                    <tr>
-                                        <td>3 AM on 06/08</td>
-                                        <td><span class="type message">Message</span></td>
-                                        <td><span class="browser small opera"></span></td>
-                                        <td>Hello World!</td>
-                                        <td>&hellip;</td>
-                                    </tr>
                                 </tbody>
                             </table>
                         </article>
