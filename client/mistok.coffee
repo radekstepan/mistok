@@ -14,6 +14,7 @@ class Mistok
         
         obj.key = @key
         obj.url = obj.url ? document.URL
+        obj.browser = @browser
 
         $.ajax
             url:      'http://0.0.0.0:1116/message'
@@ -24,6 +25,15 @@ class Mistok
                 200: -> callback 200 if callback
 
     constructor: ->
+
+        # Determine which browser we are.
+        @browser = do ->
+            if $.browser.webkit
+                if !!window.chrome then 'chrome' else 'safari'
+            else if $.browser.firefox then 'firefox'
+            else if $.browser.msie then 'explorer'
+            else if $.browser.opera then 'opera'
+            else 'unknown'
 
         window.onerror = (msg, url, line) =>
             data =
