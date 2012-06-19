@@ -1,32 +1,31 @@
 .clear() { content:"."; display:block; height:0; clear:both; visibility:hidden; }
 
+body { text-transform:uppercase; }
+
 .wrapper { width:1200px; margin:0 auto; }
 
-#top { background:#1A1A1A; color:#999; padding:10px 0;
-    #logo { background:url('../img/logo.png') no-repeat top left; display:block; width:112px; height:29px; }
-    nav { float:right; margin-top:4px;
+header#top { background:#C13536; color:#999; padding:10px; box-shadow:inset 0 -5px 5px -2px #A31313;
+    #logo { background:url('../img/logo.png') no-repeat top left; display:block; width:112px; height:29px; margin-left:20px; }
+    nav { float:right; margin:4px 20px 0 0;
         ul {
             li { display:inline;
                 &:not(:first-child) { margin-left:10px; }
-                a { color:#999; cursor:pointer;
-                    &:hover { color:#CCC; }
-                }
+                a { color:#FFF; cursor:pointer; }
             }
         }
     }
 }
 
-#main { padding:20px 0px 40px 0px; background:#E4E8E8; color:#4D4D4D;
-    header { display:block; width:100%; padding:6px 0 14px 0;
-        h3 { display:inline; background:#F2F2F2; color:#808080; text-shadow:#FFF 1px 1px 1px; font-size:14px; padding-right:10px; }
-        hr { width:100%; border-top:1px solid rgba(0, 0, 0, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.3); margin:0; margin-top:-14px; }
+#main { padding:20px 0px 40px 0px; background:#F0EEEE; color:#4D4D4D;
+    header { display:block; width:100%; padding:0 10px 14px 10px;
+        h3 { display:inline; color:#939393; background:#FFF; font-size:12px; padding-right:10px; line-height:20px; }
     }
-    article { padding:0 2px; margin-bottom:20px; }
-    .box { border-radius:3px; border:1px solid #CCC;
-        .top { background:#E6E6E6; padding:10px 2%; border-bottom:1px solid #D9D9D9;
-            h2 { margin:0; text-shadow:#FFF 1px 1px 1px; font-size:16px; }
+    article { padding:10px 0; margin-bottom:20px; background:#FFF; border:1px solid #DEDCDC; border-radius:4px; box-shadow:0px 2px 10px #E6E6E6; }
+    .box {
+        .top { padding:0px 2%;
+            h2 { margin:0; text-shadow:#FFF 1px 1px 1px; font-size:14px; }
         }
-        #content { background:#F2F2F2; padding:10px 2%;
+        #content { background:#F0EEEE; padding:10px 2%;
             .float { float:left;
                 &.left { width:66%; margin-right:2%; }
                 &.right { width:32%;
@@ -37,7 +36,16 @@
             &:after { .clear() }
         }
     }
-    table { box-shadow:0px 1px 10px #E6E6E6;
+    table { font-size:10px; margin:0; color:#444;
+        tr {
+            td:first-child, th:first-child { padding-left:12px; }
+            td:last-child, th:last-child { padding-right:12px; }
+        }
+        thead {
+            tr {
+                th { background:#F8F8F8; color:#444; text-shadow:1px 1px 1px #FFF; }
+            }
+        }
         tbody { background:#FFF;
             tr {
                 td, td:hover { border-color:#F2F2F2; background:#FFF }
@@ -46,30 +54,21 @@
     }
 }
 
-@exception: #FF7272;
-@message: #5F97FF;
+@exception: #E5E5E5;
+@message: #FFF;
 
 #chart {
-    .svg { background:#FFF; padding:15px; box-shadow:0px 1px 10px #E6E6E6;
+    .svg { background:#FFF; padding:5px 15px;
         .canvas { shape-rendering:crispEdges; }
-        .canvas line { stroke:#CCC; }
-        .canvas line.dashed { stroke:#EEE; }
-        .canvas text { fill:#999; font-size:10px; }
-        .canvas .labels text { font-size:10px; }
+        .canvas rect { stroke:@exception; }
+        .canvas line { stroke:#F4F5F6; }
+        .canvas text { fill:#C4C4C4; font-size:10px; }
+        .canvas .descriptions text { fill:#FFF; }
         
-        .canvas rect.bar.s0.q0-4 { fill:lighten(@exception, 15%) }
-        .canvas rect.bar.s0.q1-4 { fill:lighten(@exception, 10%) }
-        .canvas rect.bar.s0.q2-4 { fill:lighten(@exception, 5%) }
-        .canvas rect.bar.s0.q3-4 { fill:@exception }
-        .canvas rect.bar.s1.q0-4 { fill:lighten(@message, 15%) }
-        .canvas rect.bar.s1.q1-4 { fill:lighten(@message, 10%) }
-        .canvas rect.bar.s1.q2-4 { fill:lighten(@message, 5%) }
-        .canvas rect.bar.s1.q3-4 { fill:@message }
+        .canvas rect.bar.s0 { fill:@exception }
+        .canvas rect.bar.s1 { fill:@message }
         
-        .canvas .q0-4 text.value.on,
-        .canvas .q1-4 text.value.on { fill:#555; }
-        .canvas .q2-4 text.value.on,
-        .canvas .q3-4 text.value.on { fill:#fff; }
+        .canvas text.value.on { fill:#9A9A9A; }
         .canvas text.value.on.beyond { fill:#000; }
     }
 }
@@ -86,6 +85,11 @@
 
 #stats {
     table {
+        tbody {
+            tr {
+                td:not(:first-child) { font-size:14px; font-weight:bold; }
+            }
+        }
         span { color:#999; }
     }
 }
@@ -133,6 +137,6 @@
 
 .type {
     &:before { content:'\0000a0'; display:inline-block; margin-right:10px; width:10px; height:10px; }
-    &.exception:before { background:@exception; }
-    &.message:before { background:@message; }
+    &.exception:before { background:#D9353C; }
+    &.message:before { background:#0079BE; }
 }

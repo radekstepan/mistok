@@ -14,23 +14,25 @@
         <script>
         $(function() {
             var data = [];
-            for (x = 0; x < 20; x++) {
+            for (x = 1; x <= 30; x++) {
                 data.push({
-                    'description': '6/'+x,
+                    'description': x,
                     'data': [
-                        Math.floor(Math.random() * 11),
-                        Math.floor(Math.random() * 11)
+                        Math.floor(Math.random() * 10),
+                        Math.floor(Math.random() * 3)
                     ]
                 })
             }
 
-            (new Mynd.Chart.column({
+            var chart = new Mynd.Chart.column({
                 'el':        $('article#chart div.svg'),
                 'data':      data,
-                'width':     726,
+                'width':     714,
                 'height':    200,
                 'isStacked': true
-            })).render();
+            })
+            chart.padding.barPadding = 0.3
+            chart.render();
         });
         </script>
     </head>
@@ -59,21 +61,20 @@
                     <div id="content">
                         <div class="float left">
                             <article id="chart">
-                                <header><h3>Overview</h3><hr></header>
+                                <header><h3>Overview</h3></header>
 
                                 <div class="svg"></div>
                             </article>
                             
                             <article id="exceptions">
-                                <header><h3>Exceptions over last 14 days</h3><hr></header>
+                                <header><h3>Exceptions over last 14 days</h3></header>
 
                                 <table class="table">
                                     <thead>
                                         <tr>
                                             <th>#</th>
                                             <th>Browsers</th>
-                                            <th>Body</th>
-                                            <th>Sort</th>
+                                            <th colspan="2">Body</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -96,7 +97,7 @@
                         
                         <div class="float right">
                             <article id="stats">
-                                <header><h3>Statistics</h3><hr></header>
+                                <header><h3>Statistics</h3></header>
 
                                 <table class="table">
                                     <thead>
@@ -125,16 +126,16 @@
                             </article>
 
                             <article id="email">
-                                <header><h3>Email Notifiers</h3><hr></header>
+                                <header><h3>Email Notifiers</h3></header>
                             </article>
                             
                             <article id="whitelist">
-                                <header><h3>Whitelist Regexps</h3><hr></header>
+                                <header><h3>Whitelist Regexps</h3></header>
                             </article>
                         </div>
 
                         <article id="logs" class="float full">
-                            <header><h3>Full Logs</h3><hr></header>
+                            <header><h3>Full Logs</h3></header>
 
                             <table class="table">
                                 <thead>
