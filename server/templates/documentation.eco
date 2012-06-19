@@ -14,11 +14,16 @@
         <script type="text/coffeescript">
         $ ->
             Mistok.key = 'S3USPUPHU2H!B9R_FRA4'
-            btn = $('#test input').click ->
-                Mistok.log 'Test message', (code) ->
-                    switch code
-                        when 200 then btn.addClass 'btn-success'
-                        when 404 then btn.addClass 'btn-danger'
+            $('#test input').click (e) ->
+                btn = $(e.target)
+                switch btn.attr 'data-type'
+                    when 'message'
+                        Mistok.log 'Test message', (code) ->
+                            switch code
+                                when 200 then btn.addClass 'btn-success'
+                                when 404 then btn.addClass 'btn-danger'
+                    when 'exception'
+                        throw Error 'Test exception'
         </script>
 
         <script src="/js/coffee-script.min.js"></script>
@@ -61,7 +66,9 @@
                             <article id="test">
                                 <header><h3>Test connection</h3></header>
 
-                                <input type="button" class="btn btn-small" value="Send message" />
+                                <input type="button" data-type="message" class="btn btn-small" value="Send message" />
+
+                                <input type="button" data-type="exception" class="btn btn-small" value="Throw exception" />
                             </article>
                         </div>
                     </div>

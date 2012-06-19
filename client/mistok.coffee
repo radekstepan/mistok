@@ -6,7 +6,7 @@ class Mistok
     log: (obj, callback) ->
         if typeof (obj) is "string"
             obj =
-                type: "Message"
+                type: 'message'
                 body: obj
     
         throw "Make sure the object meets the form: { type:'', body:'' }" if obj.type is 'undefined' or obj.body is 'undefined'
@@ -27,12 +27,12 @@ class Mistok
 
         window.onerror = (msg, url, line) =>
             data =
-                type: 'Exception'
+                type: 'exception'
                 body: msg ? 'No message'
 
             data.url = url ? ''
             data.line = line ? ''
           
-            Mistok.log data
+            @log data
 
 window.Mistok = new Mistok()
