@@ -3,7 +3,7 @@ $ = window.jQuery or window.Zepto
 
 class Mistok
     
-    log: (obj) ->
+    log: (obj, callback) ->
         if typeof (obj) is "string"
             obj =
                 type: "Message"
@@ -19,18 +19,19 @@ class Mistok
             url:      'http://0.0.0.0:1116/message'
             data:     obj
             dataType: 'jsonp'
-            success: (data) -> console.log "success"
-            error:   (request, status, error) ->
+            statusCode:
+                404: -> callback 404 if callback
+                200: -> callback 200 if callback
 
     constructor: ->
 
-        window.onerror = (msg, url, lineno) =>
+        window.onerror = (msg, url, line) =>
             data =
                 type: 'Exception'
                 body: msg ? 'No message'
 
             data.url = url ? ''
-            data.lineno = lineno ? ''
+            data.line = line ? ''
           
             Mistok.log data
 

@@ -11,38 +11,34 @@
         <script src="/js/jquery.min.js"></script>
         <script src="/js/mynd.min.js"></script>
 
-        <script>
-        $(function() {
-            var data = [];
-            for (x = 1; x <= 30; x++) {
-                data.push({
-                    'description': x,
-                    'data': [
-                        Math.floor(Math.random() * 10),
-                        Math.floor(Math.random() * 3)
-                    ]
-                })
-            }
-
-            var chart = new Mynd.Chart.column({
-                'el':        $('article#chart div.svg'),
-                'data':      data,
-                'width':     714,
-                'height':    200,
-                'isStacked': true
-            })
+        <script type="text/coffeescript">
+        $ ->
+            data = []
+            for x in [0...30]
+                data.push
+                    description: x
+                    data: [ Math.floor(Math.random() * 10), Math.floor(Math.random() * 3) ]
+            
+            chart = new Mynd.Chart.column(
+                el: $("article#chart div.svg")
+                data: data
+                width: 725
+                height: 200
+                isStacked: true
+            )
             chart.padding.barPadding = 0.3
-            chart.render();
-        });
+            chart.render()
         </script>
+
+        <script src="/js/coffee-script.min.js"></script>
     </head>
     <body>
         <header id="top">
             <div class="wrapper">
                 <nav>
                     <ul>
-                        <li><a>Documentation</a></li>
-                        <li><a>Dashboard</a></li>
+                        <li><a href="/">Dashboard</a></li>
+                        <li><a href="/documentation">Documentation</a></li>
                         <li><a>Account</a></li>
                         <li><a>Logout</a></li>
                     </ul>

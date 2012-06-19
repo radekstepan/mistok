@@ -1,5 +1,5 @@
 {
-    "name": "mistök"
+    "name": "Mistök"
   , "version": "0.0.1"
   , "private": true
   , "dependencies": {
@@ -9,6 +9,7 @@
       "less":          "latest",
       "colors":        "latest",
       "mime":          "latest",
-      "coffee-script": "latest"
+      "coffee-script": "latest",
+      "dirty":         "latest"
   }
 }
