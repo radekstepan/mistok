@@ -13,13 +13,22 @@ dirty   = require 'dirty'
 router = routes: {}
 router.get = (route, callback) -> router.routes[route] = callback
 router.get '/', (request, response) ->
+    # Get exceptions over past 14 days.
+    fourteen = new Date().getTime() - 1.2096e9
     db.each 'messages', (key, value) ->
-        value.type is 'exception'
-    , (result) ->
-        console.log result
+        value.type is 'exception' and value.timestamp >= fourteen
+    , (messages) ->
+        # Now we want to collate the same exceptions together.
+        exceptions = {}
+        for key, value of messages
+            exceptions[value.body] ?= { } # init? messages are in db in chrono order
+            exceptions[value.body][value.browser] = true # save browser
 
-    db.all 'messages', (messages) ->
-        render request, response, 'dashboard', 'log': messages
+        # Get the full log.
+        db.all 'messages', (log) ->
+            render request, response, 'dashboard',
+                'log':        log
+                'exceptions': exceptions
 
 router.get '/documentation', (request, response) ->
     render request, response, 'documentation'
@@ -55,11 +64,9 @@ db.all = (database, callback) ->
         callback database._docs
 db.each = (database, iterator, callback) ->
     db.init database, (database) ->
-        result = []
+        result = {}
         database.forEach (key, value) ->
-            if iterator(key, value) then result.push
-                'key': key
-                'val': value
+            if iterator(key, value) then result[key] = value
         callback result
 
 # -------------------------------------------------------------------
