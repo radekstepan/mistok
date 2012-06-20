@@ -6,7 +6,30 @@ eco     = require 'eco'
 colors  = require 'colors'
 mime    = require 'mime'
 less    = require 'less'
-db      = require 'dirty'
+dirty   = require 'dirty'
+
+db =
+    databases = {}
+db.init = (database, callback) ->
+    if databases[database] then callback databases[database]
+    else
+        databases[database] = dirty "#{__dirname}/data/#{database}.json"
+        databases[database].on "load", -> callback databases[database]
+db.guid = ->
+    hex = -> (((1 + Math.random()) * 0x10000) | 0).toString(16).substring 1
+    hex() + hex() + "-" + hex() + "-" + hex() + "-" + hex() + "-" + hex() + hex() + hex()
+db.save = (database, value, callback) ->
+    db.init database, (database) ->
+        unique = false
+        while not unique
+            if database.get(key = db.guid()) is undefined then unique = true
+        database.set key, value, -> callback()
+db.get = (database, key, callback) ->
+    db.init database, (database) ->
+        callback database.get(key)
+db.all = (database, callback) ->
+    db.init database, (database) ->
+        callback database._docs
 
 # Log errors without throwing an exception but closing the connection.
 log = (error, response) ->
@@ -50,13 +73,13 @@ server = http.createServer (request, response) ->
     if request.method is 'GET'
         switch request.url.split('?')[0]
             when '/'
-                render request, response, 'dashboard', 'log': messages._docs
+                db.all 'messages', (messages) ->
+                    render request, response, 'dashboard', 'log': messages
             when '/documentation'
                 render request, response, 'documentation'
             when '/message'
-                # Parse and save message under its timestamp.
-                message = url.parse(request.url, true).query ; delete message['callback']
-                messages.set message._, url.parse(request.url, true).query, -> response.end()
+                message = url.parse(request.url, true).query
+                db.save 'messages', url.parse(request.url, true).query, -> response.end()
             else
                 # Public resource?
                 console.log "#{request.method} #{request.url}".grey
@@ -87,9 +110,6 @@ server = http.createServer (request, response) ->
     
     else log { 'message': 'No matching route' }, response
 
-# Connect to DB.
-messages = db "#{__dirname}/data/messages.json"
-messages.on "load", ->
-    # Fire up the server.
-    server.listen 1116
-    console.log "Listening on port 1116".green.bold
+# Fire up the server.
+server.listen 1116
+console.log "Listening on port 1116".green.bold

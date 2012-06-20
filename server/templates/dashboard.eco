@@ -143,9 +143,9 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <% for timestamp, message of @log: %>
+                                    <% for k, message of @log: %>
                                         <tr>
-                                            <td><%= new Date(parseInt(timestamp)).toUTCString() %></td>
+                                            <td><%= new Date(parseInt(message._)).toUTCString() %></td>
                                             <td><span class="type <%= message.type %>"><%= message.type %></span></td>
                                             <td><span class="browser small <%= message.browser %>"></span></td>
                                             <td>
