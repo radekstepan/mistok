@@ -74,18 +74,23 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td><span class="browser big chrome"></span></td>
-                                            <td>
-                                                Uncaught Error: this is not happening!
-                                                <ul>
-                                                    <li>http://localhost:1115/</li>
-                                                    <li>line 73</li>
-                                                </ul>
-                                            </td>
-                                            <td>&hellip;</td>
-                                        </tr>
+                                        <% for body, browsers of @exceptions: %>
+                                            <tr>
+                                                <td><%= 'undefined' %></td>
+                                                <td>
+                                                    <% for browser, v of browsers: %>
+                                                    <span class="browser big <%= browser %>"></span>
+                                                </td>
+                                                <td>
+                                                    <%= body %>
+                                                    <ul>
+                                                        <li><%= 'undefined' %></li>
+                                                        <li>line <%='undefined' %></li>
+                                                    </ul>
+                                                </td>
+                                                <td>&hellip;</td>
+                                            </tr>
+                                        <% end %>
                                     </tbody>
                                 </table>
                             </article>
