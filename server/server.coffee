@@ -13,6 +13,11 @@ dirty   = require 'dirty'
 router = routes: {}
 router.get = (route, callback) -> router.routes[route] = callback
 router.get '/', (request, response) ->
+    db.each 'messages', (key, value) ->
+        value.type is 'exception'
+    , (result) ->
+        console.log result
+
     db.all 'messages', (messages) ->
         render request, response, 'dashboard', 'log': messages
 
@@ -48,6 +53,14 @@ db.get = (database, key, callback) ->
 db.all = (database, callback) ->
     db.init database, (database) ->
         callback database._docs
+db.each = (database, iterator, callback) ->
+    db.init database, (database) ->
+        result = []
+        database.forEach (key, value) ->
+            if iterator(key, value) then result.push
+                'key': key
+                'val': value
+        callback result
 
 # -------------------------------------------------------------------
 # Error 404 logging
