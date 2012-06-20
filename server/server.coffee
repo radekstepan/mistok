@@ -21,7 +21,8 @@ router.get '/documentation', (request, response) ->
 
 router.get '/message', (request, response) ->
     message = url.parse(request.url, true).query
-    db.save 'messages', url.parse(request.url, true).query, -> response.end()
+    message.timestamp = new Date().getTime()
+    db.save 'messages', message, -> response.end()
 
 # -------------------------------------------------------------------
 # Database
