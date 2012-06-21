@@ -15,8 +15,10 @@ router.get = (route, callback) -> router.routes[route] = callback
 
 # Dashboard.
 router.get '/', (request, response) ->
+    now = new Date()
+
     # Get exceptions over past 14 days.
-    fourteen = new Date().getTime() - 1.2096e9
+    fourteen = now.getTime() - 1.2096e9
     db.messages.fetch
         desc: 'timestamp'
     , ((doc, key) ->
@@ -28,8 +30,40 @@ router.get '/', (request, response) ->
         db.messages.fetch desc: 'timestamp', ( -> true), (error, log) ->
             return log error, response if error and error.message isnt 'No records.'
 
+            # Calculate the stats.
+            today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9).getTime() # today at 9AM
+
+            stats =
+                today:      [ 0, 0 ]
+                lastToday:  [ 0, 0 ]
+                week:       [ 0, 0 ]
+                lastWeek:   [ 0, 0 ]
+                month:      [ 0, 0 ]
+                lastMonth:  [ 0, 0 ]
+            for message in log
+                type = (message.type is 'exception') + 0
+                if message.timestamp > today # today
+                    stats.today[type] += message.count
+                    stats.week[type] += message.count
+                    stats.month[type] += message.count
+                else if message.timestamp > today - 8.64e7 # yesterday
+                    stats.lastToday[type] += message.count
+                    stats.week[type] += message.count
+                    stats.month[type] += message.count
+                else if message.timestamp > today - 6.048e8 # this week
+                    stats.week[type] += message.count
+                    stats.month[type] += message.count
+                else if message.timestamp > today - 1.2096e9 # last week
+                    stats.lastWeek[type] += message.count
+                    stats.month[type] += message.count
+                else if message.timestamp > today - 2.592e9 # this month (assume 30)
+                    stats.month[type] += message.count
+                else if message.timestamp > today - 5.184e9 # last month (assume 30)
+                    stats.lastMonth[type] += message.count
+
             render request, response, 'dashboard',
                 'log':        log
+                'stats':      stats
                 'exceptions': exceptions
 
 # Documentation.
