@@ -6,80 +6,79 @@ eco     = require 'eco'
 colors  = require 'colors'
 mime    = require 'mime'
 less    = require 'less'
-dirty   = require 'dirty'
+tiny    = require 'tiny'
 
 # -------------------------------------------------------------------
 # Routes
 router = routes: {}
 router.get = (route, callback) -> router.routes[route] = callback
+
+# Dashboard.
 router.get '/', (request, response) ->
     # Get exceptions over past 14 days.
     fourteen = new Date().getTime() - 1.2096e9
-    db.each 'messages', (key, value) ->
-        value.type is 'exception' and value.timestamp >= fourteen
-    , (messages) ->
-        # Now we want to collate the same exceptions together.
-        exceptions = {}
-        for k, value of messages
-            key = value.body + value.url + value.line
-            exceptions[key] ?=
-                'browsers': {}
-                'body':     value.body
-                'url':      value.url
-                'line':     value.line
-                'count':    0
-            exceptions[key].browsers[value.browser] = true
-            exceptions[key].count += 1 # increase the count of how many times this exceptions has happened
+    db.messages.fetch
+        desc: 'timestamp'
+    , ((doc, key) ->
+        doc.type is 'exception'
+    ), (error, exceptions) ->
+        return log error, response if error and error.message isnt 'No records.'
 
         # Get the full log.
-        db.all 'messages', (log) ->
+        db.messages.fetch desc: 'timestamp', ( -> true), (error, log) ->
+            return log error, response if error and error.message isnt 'No records.'
+
             render request, response, 'dashboard',
                 'log':        log
                 'exceptions': exceptions
 
+# Documentation.
 router.get '/documentation', (request, response) ->
     render request, response, 'documentation'
 
+# Receive message.
 router.get '/message', (request, response) ->
     message = url.parse(request.url, true).query
     message.timestamp = new Date().getTime()
-    db.save 'messages', message, -> response.end()
+    message.count = 1
+
+    # Do we have the same message from upto an hour ago?
+    hour = message.timestamp - 3.6e6
+    db.messages.fetch
+        desc: 'timestamp'
+        limit: 1
+    , ((doc, key) ->
+        (doc.timestamp >= hour and doc.type is message.type and doc.body is message.body and doc.url is message.url and doc.line is message.line)
+    ), (error, results) ->
+        return log error, response if error and error.message isnt 'No records.'
+
+        for result in results
+            return db.messages.update(result._key,
+                count: result.count + 1
+            , (error) ->
+                return log error, response if error
+                db.messages.dump true, ->
+                    console.log 'Database dumped'.blue
+                    response.end()
+            )
+
+        db.messages.set db.guid(), message, (error) ->
+            return log error, response if error
+            db.messages.dump true, ->
+                console.log 'Database dumped'.blue
+                response.end()
 
 # -------------------------------------------------------------------
-# Database
-db =
-    databases = {}
-db.init = (database, callback) ->
-    if databases[database] then callback databases[database]
-    else
-        databases[database] = dirty "#{__dirname}/data/#{database}.json"
-        databases[database].on "load", -> callback databases[database]
+# Database helpers.
+db = {}
 db.guid = ->
     hex = -> (((1 + Math.random()) * 0x10000) | 0).toString(16).substring 1
-    hex() + hex() + "-" + hex() + "-" + hex() + "-" + hex() + "-" + hex() + hex() + hex()
-db.save = (database, value, callback) ->
-    db.init database, (database) ->
-        unique = false
-        while not unique
-            if database.get(key = db.guid()) is undefined then unique = true
-        database.set key, value, -> callback()
-db.get = (database, key, callback) ->
-    db.init database, (database) ->
-        callback database.get(key)
-db.all = (database, callback) ->
-    db.init database, (database) ->
-        callback database._docs
-db.each = (database, iterator, callback) ->
-    db.init database, (database) ->
-        result = {}
-        database.forEach (key, value) ->
-            if iterator(key, value) then result[key] = value
-        callback result
+    "#{hex()}-#{hex()}-#{hex()}"
 
 # -------------------------------------------------------------------
-# Error 404 logging
+# Error 404 logging.
 log = (error, response) ->
-    console.log error.message.red
+    console.log new String(error.message).red
     response.writeHead 404
     response.end()
 
@@ -154,6 +153,12 @@ server = http.createServer (request, response) ->
     else log { 'message': 'No matching route' }, response
 
 # -------------------------------------------------------------------
-# Fire up the server.
-server.listen 1116
-console.log "Listening on port 1116".green.bold
+# Load the database.
+tiny "#{__dirname}/data/messages.json", (error, database) ->
+    throw new String(error).red if error
+    
+    db.messages = database
+
+    # Fire up the server.
+    server.listen 1116
+    console.log "Listening on port 1116".green.bold

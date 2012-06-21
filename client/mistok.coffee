@@ -19,7 +19,7 @@ class Mistok
         $.ajax
             url:      'http://0.0.0.0:1116/message'
             data:     obj
-            dataType: 'json'
+            dataType: 'jsonp'
             statusCode:
                 404: -> callback 404 if callback
                 200: -> callback 200 if callback
