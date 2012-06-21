@@ -183,13 +183,19 @@ router.get '/openid/verify', (request, response) ->
                 if error
                     if error.message is 'No records.'
                         # Insert new user.
-                        db.users.guid (key) ->
-                            db.users.set key, identity: identity, (error) ->
-                                return log error, response if error
-                                db.users.dump true, ->
-                                    console.log 'Database dumped'.blue
-                                    # Save the cookie for the new user
-                                    saveCookie key, response
+                        db.users.guid (userKey) ->
+                            db.users.guid ((clientKey) ->
+                                user =
+                                    identity:   identity
+                                    client_key: clientKey
+
+                                db.users.set userKey, user, (error) ->
+                                    return log error, response if error
+                                    db.users.dump true, ->
+                                        console.log 'Database dumped'.blue
+                                        # Save the cookie for the new user
+                                        saveCookie userKey, response
+                            ), 'client_key'
                     else return log error, response
                 else
                     # We have a user. Cookie their key.
@@ -232,16 +238,29 @@ css = (request, response, path) ->
 # Helpers.
 db = {}
 hex = -> (((1 + Math.random()) * 0x10000) | 0).toString(16).substring 1
-tiny::guid = (callback) ->
-    self = @    
+# Generate a unique key for _key by default or user selected.
+tiny::guid = (callback, customKey) ->
+    self = @
     (unique = ->
+        # Generate key.
         key = "#{hex()}-#{hex()}-#{hex()}"
-        self.get key, (error, data) ->
+
+        # Shall we do moar?
+        moar = (error, data) ->
             if error
-                if error.message is 'Not found.' then callback key else throw new String(error).red
+                if error.message is 'Not found.' or error.message is 'No records.' then callback key else throw new String(error).red
             else
                 console.log "Key #{key} already used".blue
                 unique()
+        # _key
+        if customKey? then self.get key, moar
+        else
+            # Not matching custom key, probably slow as hell.
+            db.users.fetch
+                limit: 1
+            , ((doc, key) ->
+                doc[customKey] is key
+            ), moar
     )()
 
 # -------------------------------------------------------------------
