@@ -20,9 +20,10 @@ router.get '/', (request, response) ->
     , (messages) ->
         # Now we want to collate the same exceptions together.
         exceptions = {}
-        for key, value of messages
-            exceptions[value.body] ?= { } # init? messages are in db in chrono order
-            exceptions[value.body][value.browser] = true # save browser
+        for k, value of messages
+            key = value.body + value.url + value.line
+            exceptions[key] ?= { 'browsers': {}, 'value': value } # init? messages are in db in chrono order
+            exceptions[key].browsers[value.browser] = true # save browser
 
         # Get the full log.
         db.all 'messages', (log) ->
