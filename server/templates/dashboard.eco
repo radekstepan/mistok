@@ -74,24 +74,22 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <% i = 1 %>
                                         <% for k, data of @exceptions: %>
                                             <tr>
-                                                <td><%= i %></td>
+                                                <td><%= data.count %></td>
                                                 <td>
                                                     <% for browser, v of data.browsers: %>
                                                     <span class="browser big <%= browser %>"></span>
                                                 </td>
                                                 <td>
-                                                    <%= data.value.body %>
+                                                    <%= data.body %>
                                                     <ul>
-                                                        <li><%= data.value.url %></li>
-                                                        <li>line <%= data.value.line %></li>
+                                                        <li><%= data.url %></li>
+                                                        <li>line <%= data.line %></li>
                                                     </ul>
                                                 </td>
                                                 <td>&hellip;</td>
                                             </tr>
-                                            <% i += 1 %>
                                         <% end %>
                                     </tbody>
                                 </table>

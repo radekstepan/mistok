@@ -22,8 +22,14 @@ router.get '/', (request, response) ->
         exceptions = {}
         for k, value of messages
             key = value.body + value.url + value.line
-            exceptions[key] ?= { 'browsers': {}, 'value': value } # init? messages are in db in chrono order
-            exceptions[key].browsers[value.browser] = true # save browser
+            exceptions[key] ?=
+                'browsers': {}
+                'body':     value.body
+                'url':      value.url
+                'line':     value.line
+                'count':    0
+            exceptions[key].browsers[value.browser] = true
+            exceptions[key].count += 1 # increase the count of how many times this exceptions has happened
 
         # Get the full log.
         db.all 'messages', (log) ->
