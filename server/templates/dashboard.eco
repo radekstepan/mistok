@@ -40,7 +40,7 @@
                         <li><a href="/">Dashboard</a></li>
                         <li><a href="/documentation">Documentation</a></li>
                         <li><a>Account</a></li>
-                        <li><a>Logout</a></li>
+                        <li><a href="/logout">Logout</a></li>
                     </ul>
                 </nav>
                 <a id="logo" href="/"></a>

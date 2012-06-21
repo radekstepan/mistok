@@ -106,6 +106,13 @@ router.get '/documentation', (request, response) ->
     authorize request, response, (user) ->
         render request, response, 'documentation'
 
+# Logout.
+router.get '/logout', (request, response) ->
+    response.writeHead 200,
+      'Set-Cookie':   "mistok_app=null;path=/;domain=0.0.0.0;expires=#{new Date().toUTCString()}"
+      'Content-Type': 'text/plain'
+    response.end()
+
 # -------------------------------------------------------------------
 # User authorization.
 authorize = (request, response, callback) ->
@@ -158,14 +165,14 @@ router.get '/openid/verify', (request, response) ->
 
             # Save user cookie.
             saveCookie = (key, response) ->
-                console.log "User #{key} is in".yellow
+                console.log "User #{key} authenticated".yellow
 
                 response.writeHead 200,
                   'Set-Cookie':   "mistok_app=#{key};path=/;domain=0.0.0.0"
-                  'Content-Type': 'text/plain'
+                  'Content-Type': 'text/html'
 
                 # Redir using JavaScript to the dashboard.
-                response.end "You are fucking in"
+                response.end '<script>window.location="http://0.0.0.0:1116/"</script>'
 
             # Do we already have this user?
             db.users.fetch
