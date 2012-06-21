@@ -1,4 +1,25 @@
-{"key":"1b004dbf-b8ff-a302-9a46-fd397a2daf25","val":{"type":"message","body":"Test message","key":"S3USPUPHU2H!B9R_FRA4","url":"http://0.0.0.0:1116/documentation","browser":"chrome","timestamp":1340190591722}}
-{"key":"a17cb611-ae06-be4a-56bf-aeeb59ca1457","val":{"type":"exception","body":"Uncaught Error: Test exception","url":"http://0.0.0.0:1116/documentation","line":"19","key":"S3USPUPHU2H!B9R_FRA4","browser":"chrome","timestamp":1340190592382}}
-{"key":"a021f6cc-8a20-24ce-99f8-2c543716f3d9","val":{"type":"exception","body":"Uncaught Error: Test exception","url":"http://0.0.0.0:1116/documentation","line":"19","key":"S3USPUPHU2H!B9R_FRA4","browser":"chrome","timestamp":1340213440140}}
-{"key":"b8ee5694-cda7-9b9b-7cb8-3b49024ecdca","val":{"type":"message","body":"Test message","key":"S3USPUPHU2H!B9R_FRA4","url":"http://0.0.0.0:1116/documentation","browser":"chrome","timestamp":1340276380714}}
+4c7f-1126-130f.callback	"jQuery17209677533893845975_1340286224565"
+4c7f-1126-130f.type	"message"
+4c7f-1126-130f.body	"Test message"
+4c7f-1126-130f.key	"S3USPUPHU2H!B9R_FRA4"
+4c7f-1126-130f.url	"http://0.0.0.0:1116/documentation"
+4c7f-1126-130f.browser	"chrome"
+4c7f-1126-130f._	"1340286226155"
+4c7f-1126-130f.timestamp	1340286226158
+4c7f-1126-130f.count	1
+4c7f-1126-130f._key	"4c7f-1126-130f"
+42c8-d8a5-4fd4.callback	"jQuery17209677533893845975_1340286224566"
+42c8-d8a5-4fd4.type	"exception"
+42c8-d8a5-4fd4.body	"Uncaught Error: Test exception"
+42c8-d8a5-4fd4.url	"http://0.0.0.0:1116/documentation"
+42c8-d8a5-4fd4.line	"19"
+42c8-d8a5-4fd4.key	"S3USPUPHU2H!B9R_FRA4"
+42c8-d8a5-4fd4.browser	"chrome"
+42c8-d8a5-4fd4._	"1340286228566"
+42c8-d8a5-4fd4.timestamp	1340286228568
+42c8-d8a5-4fd4.count	1
+42c8-d8a5-4fd4._key	"42c8-d8a5-4fd4"
+4c7f-1126-130f.count	2
+4c7f-1126-130f._key	"4c7f-1126-130f"
+42c8-d8a5-4fd4.count	2
+42c8-d8a5-4fd4._key	"42c8-d8a5-4fd4"

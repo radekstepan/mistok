@@ -10,6 +10,6 @@
       "colors":        "latest",
       "mime":          "latest",
       "coffee-script": "latest",
-      "dirty":         "latest"
+      "tiny":          "latest"
   }
 }

@@ -28,7 +28,7 @@
       return $.ajax({
         url: 'http://0.0.0.0:1116/message',
         data: obj,
-        dataType: 'json',
+        dataType: 'jsonp',
         statusCode: {
           404: function() {
             if (callback) {

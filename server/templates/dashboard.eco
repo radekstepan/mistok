@@ -16,7 +16,7 @@
             data = []
             for x in [0...30]
                 data.push
-                    description: x
+                    description: 'day'
                     data: [ Math.floor(Math.random() * 10), Math.floor(Math.random() * 3) ]
             
             chart = new Mynd.Chart.column(
@@ -69,23 +69,22 @@
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Browsers</th>
+                                            <th>Browser</th>
                                             <th colspan="2">Body</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <% for k, data of @exceptions: %>
+                                        <% for exception in @exceptions: %>
                                             <tr>
-                                                <td><%= data.count %></td>
+                                                <td><%= exception.count %></td>
                                                 <td>
-                                                    <% for browser, v of data.browsers: %>
-                                                    <span class="browser big <%= browser %>"></span>
+                                                    <span class="browser big <%= exception.browser %>"></span>
                                                 </td>
                                                 <td>
-                                                    <%= data.body %>
+                                                    <%= exception.body %>
                                                     <ul>
-                                                        <li><%= data.url %></li>
-                                                        <li>line <%= data.line %></li>
+                                                        <li><%= exception.url %></li>
+                                                        <li>line <%= exception.line %></li>
                                                     </ul>
                                                 </td>
                                                 <td>&hellip;</td>
@@ -141,6 +140,7 @@
                             <table class="table">
                                 <thead>
                                     <tr>
+                                        <th>#</th>
                                         <th>Time</th>
                                         <th>Type</th>
                                         <th>Browser</th>
@@ -148,8 +148,9 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <% for k, message of @log: %>
+                                    <% for message in @log: %>
                                         <tr>
+                                            <td><%= message.count %></td>
                                             <td><%= new Date(parseInt(message.timestamp)).toUTCString() %></td>
                                             <td><span class="type <%= message.type %>"><%= message.type %></span></td>
                                             <td><span class="browser small <%= message.browser %>"></span></td>
