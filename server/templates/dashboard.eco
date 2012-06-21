@@ -70,7 +70,8 @@
                                         <tr>
                                             <th>#</th>
                                             <th>Browser</th>
-                                            <th colspan="2">Body</th>
+                                            <th>Body</th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -87,7 +88,7 @@
                                                         <li>line <%= exception.line %></li>
                                                     </ul>
                                                 </td>
-                                                <td>&hellip;</td>
+                                                <td><button class="btn btn-mini" href="#">Remove</button></td>
                                             </tr>
                                         <% end %>
                                     </tbody>
@@ -144,7 +145,8 @@
                                         <th>Time</th>
                                         <th>Type</th>
                                         <th>Browser</th>
-                                        <th colspan="2">Body</th>
+                                        <th>Body</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -160,7 +162,7 @@
                                                     at <span class="url"><%= message.url %></span> on line <span class="line"><%= message.line %></span>
                                                 <% end %>
                                             </td>
-                                            <td>&hellip;</td>
+                                            <td><button class="btn btn-mini" href="#">Remove</button></td>
                                         </tr>
                                     <% end %>
                                 </tbody>

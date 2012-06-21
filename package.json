@@ -10,6 +10,7 @@
       "colors":        "latest",
       "mime":          "latest",
       "coffee-script": "latest",
-      "tiny":          "latest"
+      "tiny":          "latest",
+      "openid":        "latest"
   }
 }

@@ -7,6 +7,7 @@ colors  = require 'colors'
 mime    = require 'mime'
 less    = require 'less'
 tiny    = require 'tiny'
+openid  = require 'openid'
 
 # -------------------------------------------------------------------
 # Routes
@@ -104,6 +105,29 @@ router.get '/message', (request, response) ->
                     response.end()
 
 # -------------------------------------------------------------------
+# OpenID authentication.
+relying = new openid.RelyingParty 'http://0.0.0.0:1116/openid/verify', null, false, false, []
+router.get '/openid/authenticate', (request, response) ->
+    relying.authenticate 'http://www.google.com/accounts/o8/id', false, (error, authUrl) ->
+        if error
+            response.writeHead 200
+            response.end "Authentication failed: " + error.message
+        else unless authUrl
+            response.writeHead 200
+            response.end "Authentication failed"
+        else
+            response.writeHead 302,
+                Location: authUrl
+            response.end()
+
+router.get '/openid/verify', (request, response) ->
+    relying.verifyAssertion request, (error, result) ->
+        response.writeHead 200
+        if not error and result.authenticated
+            console.log ('OpenID Google identity ' + result.claimedIdentifier.split('=').pop()).yellow
+        response.end()
+
+# -------------------------------------------------------------------
 # Database helper.
 db = {}
 tiny::guid = (callback) ->
@@ -130,8 +154,6 @@ log = (error, response) ->
 # -------------------------------------------------------------------
 # Eco template rendering.
 render = (request, response, filename, data={}) ->
-    console.log "#{request.method} #{request.url}".bold
-
     fs.readFile "./server/templates/#{filename}.eco", "utf8", (err, template) ->
         return log err, response if err
 
@@ -166,7 +188,9 @@ server = http.createServer (request, response) ->
 
     if request.method is 'GET'
         route = router.routes[request.url.split('?')[0]]
-        if route then route request, response
+        if route
+            console.log "#{request.method} #{request.url}".bold
+            route request, response
         else
             # Public resource?
             console.log "#{request.method} #{request.url}".grey
