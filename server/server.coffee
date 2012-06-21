@@ -62,18 +62,29 @@ router.get '/message', (request, response) ->
                     response.end()
             )
 
-        db.messages.set db.guid(), message, (error) ->
-            return log error, response if error
-            db.messages.dump true, ->
-                console.log 'Database dumped'.blue
-                response.end()
+        db.messages.guid (key) ->
+            db.messages.set key, message, (error) ->
+                return log error, response if error
+                db.messages.dump true, ->
+                    console.log 'Database dumped'.blue
+                    response.end()
 
 # -------------------------------------------------------------------
-# Database helpers.
+# Database helper.
 db = {}
-db.guid = ->
+tiny::guid = (callback) ->
+    self = @
     hex = -> (((1 + Math.random()) * 0x10000) | 0).toString(16).substring 1
-    "#{hex()}-#{hex()}-#{hex()}"
+    
+    (unique = ->
+        key = "#{hex()}-#{hex()}-#{hex()}"
+        self.get key, (error, data) ->
+            if error
+                if error.message is 'Not found.' then callback key else throw new String(error).red
+            else
+                console.log "Key #{key} already used".blue
+                unique()
+    )()
 
 # -------------------------------------------------------------------
 # Error 404 logging.
