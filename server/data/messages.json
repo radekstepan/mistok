@@ -1,3 +1,4 @@
 {"key":"1b004dbf-b8ff-a302-9a46-fd397a2daf25","val":{"type":"message","body":"Test message","key":"S3USPUPHU2H!B9R_FRA4","url":"http://0.0.0.0:1116/documentation","browser":"chrome","timestamp":1340190591722}}
 {"key":"a17cb611-ae06-be4a-56bf-aeeb59ca1457","val":{"type":"exception","body":"Uncaught Error: Test exception","url":"http://0.0.0.0:1116/documentation","line":"19","key":"S3USPUPHU2H!B9R_FRA4","browser":"chrome","timestamp":1340190592382}}
 {"key":"a021f6cc-8a20-24ce-99f8-2c543716f3d9","val":{"type":"exception","body":"Uncaught Error: Test exception","url":"http://0.0.0.0:1116/documentation","line":"19","key":"S3USPUPHU2H!B9R_FRA4","browser":"chrome","timestamp":1340213440140}}
+{"key":"b8ee5694-cda7-9b9b-7cb8-3b49024ecdca","val":{"type":"message","body":"Test message","key":"S3USPUPHU2H!B9R_FRA4","url":"http://0.0.0.0:1116/documentation","browser":"chrome","timestamp":1340276380714}}

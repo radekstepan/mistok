@@ -74,22 +74,24 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <% for body, browsers of @exceptions: %>
+                                        <% i = 1 %>
+                                        <% for k, data of @exceptions: %>
                                             <tr>
-                                                <td><%= 'undefined' %></td>
+                                                <td><%= i %></td>
                                                 <td>
-                                                    <% for browser, v of browsers: %>
+                                                    <% for browser, v of data.browsers: %>
                                                     <span class="browser big <%= browser %>"></span>
                                                 </td>
                                                 <td>
-                                                    <%= body %>
+                                                    <%= data.value.body %>
                                                     <ul>
-                                                        <li><%= 'undefined' %></li>
-                                                        <li>line <%='undefined' %></li>
+                                                        <li><%= data.value.url %></li>
+                                                        <li>line <%= data.value.line %></li>
                                                     </ul>
                                                 </td>
                                                 <td>&hellip;</td>
                                             </tr>
+                                            <% i += 1 %>
                                         <% end %>
                                     </tbody>
                                 </table>
