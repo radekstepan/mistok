@@ -21,3 +21,24 @@ ec1e-6e1c-253a._key	"ec1e-6e1c-253a"
 9d3d-68e5-8d01._key	"9d3d-68e5-8d01"
 9d3d-68e5-8d01.count	2
 9d3d-68e5-8d01._key	"9d3d-68e5-8d01"
+72c9-f850-9479.callback	"jQuery1720017247260315343738_1340362765279"
+72c9-f850-9479.type	"message"
+72c9-f850-9479.body	"Test message"
+72c9-f850-9479.key	"S3USPUPHU2H!B9R_FRA4"
+72c9-f850-9479.url	"http://0.0.0.0:1116/documentation"
+72c9-f850-9479.browser	"chrome"
+72c9-f850-9479._	"1340362784739"
+72c9-f850-9479.timestamp	1340362784746
+72c9-f850-9479.count	1
+72c9-f850-9479._key	"72c9-f850-9479"
+67e2-81b0-7ed2.callback	"jQuery17207801201792899519_1340364430286"
+67e2-81b0-7ed2.type	"exception"
+67e2-81b0-7ed2.body	"Uncaught Error: Test exception"
+67e2-81b0-7ed2.url	"http://mistok.app:1116/documentation"
+67e2-81b0-7ed2.line	"19"
+67e2-81b0-7ed2.key	"S3USPUPHU2H!B9R_FRA4"
+67e2-81b0-7ed2.browser	"chrome"
+67e2-81b0-7ed2._	"1340364435681"
+67e2-81b0-7ed2.timestamp	1340364435683
+67e2-81b0-7ed2.count	1
+67e2-81b0-7ed2._key	"67e2-81b0-7ed2"

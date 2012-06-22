@@ -10,7 +10,12 @@ tiny    = require 'tiny'
 openid  = require 'openid'
 
 # -------------------------------------------------------------------
-# Routes
+# Config.
+host = 'mistok.app:1116'
+port = 1116
+
+# -------------------------------------------------------------------
+# Routes.
 router = routes: {}
 router.get = (route, callback) -> router.routes[route] = callback
 
@@ -108,12 +113,14 @@ router.get '/documentation', (request, response) ->
         db.users.fetch limit:1, ( (doc, key) -> key is user ), (error, results) ->
             return log error, response if error
 
-            render request, response, 'documentation', 'user': results[0]
+            render request, response, 'documentation',
+                'user': results[0]
+                'host': host
 
 # Logout.
 router.get '/logout', (request, response) ->
     response.writeHead 200,
-      'Set-Cookie':   "mistok_app=null;path=/;domain=0.0.0.0;expires=#{new Date().toUTCString()}"
+      'Set-Cookie':   "mistok_app=null;path=/;domain=#{host.split(':')[0]};expires=#{new Date().toUTCString()}"
       'Content-Type': 'text/plain'
     response.end()
 
@@ -146,7 +153,7 @@ authorize = (request, response, callback) ->
 
 # -------------------------------------------------------------------
 # OpenID authentication.
-relying = new openid.RelyingParty 'http://0.0.0.0:1116/openid/verify', 'http://0.0.0.0:1116/', false, false, []
+relying = new openid.RelyingParty "http://#{host}/openid/verify", "http://#{host}/", false, false, []
 router.get '/openid/authenticate', (request, response) ->
     relying.authenticate 'http://www.google.com/accounts/o8/id', false, (error, authUrl) ->
         if error
@@ -172,11 +179,11 @@ router.get '/openid/verify', (request, response) ->
                 console.log "User #{key} authenticated".yellow
 
                 response.writeHead 200,
-                  'Set-Cookie':   "mistok_app=#{key};path=/;domain=0.0.0.0"
+                  'Set-Cookie':   "mistok_app=#{key};path=/;domain=#{host.split(':')[0]}"
                   'Content-Type': 'text/html'
 
                 # Redir using JavaScript to the dashboard.
-                response.end '<script>window.location="http://0.0.0.0:1116/"</script>'
+                response.end "<script>window.location='http://#{host}/'</script>"
 
             # Do we already have this user?
             db.users.fetch
@@ -323,5 +330,5 @@ tiny "#{__dirname}/data/messages.json", (error, database) ->
         db.users = database
 
         # Fire up the server.
-        server.listen 1116
-        console.log "Listening on port 1116".green.bold
+        server.listen port
+        console.log "Listening on port #{port}".green.bold
