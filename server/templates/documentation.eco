@@ -57,7 +57,7 @@
 
 <pre>&lt;script src="/js/mistok.js"&gt;&lt;/script&gt;
 &lt;script&gt;
-    Mistok.key = 's3uspUphu2h!b9r_fra4'
+    Mistok.key = '<%= @user.client_key %>'
 &lt;/script&gt;</pre>
                             </article>
                         </div>
