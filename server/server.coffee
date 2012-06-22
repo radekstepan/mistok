@@ -11,7 +11,7 @@ openid  = require 'openid'
 
 # -------------------------------------------------------------------
 # Config.
-host = 'node.app:1116'
+host = '0.0.0.0:1116'
 port = 1116
 
 # -------------------------------------------------------------------
@@ -91,7 +91,7 @@ router.get '/message', (request, response) ->
         desc: 'timestamp'
         limit: 1
     , ((doc, key) ->
-        (doc.timestamp >= hour and doc.type is message.type and doc.body is message.body and doc.url is message.url and doc.line is message.line and doc.line is message.browser)
+        (doc.timestamp >= hour and doc.type is message.type and doc.body is message.body and doc.url is message.url and doc.line is message.line and doc.browser is message.browser)
     ), (error, results) ->
         return log error, response if error and error.message isnt 'No records.'
 
