@@ -55,7 +55,7 @@
                             <article>
                                 <header><h3>config</h3></header>
 
-                                <p>Point to the Mistök client script and set it up with your key:</p>
+                                <p>Point to the Mistök client script and set it up with your key and server:</p>
 
 <pre>&lt;script src="http://<%= @host %>/js/mistok.js"&gt;&lt;/script&gt;
 &lt;script&gt;
