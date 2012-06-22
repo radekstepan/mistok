@@ -10,6 +10,9 @@
 
     Mistok.prototype.log = function(obj, callback) {
       var _ref;
+      if (this.server === void 0) {
+        throw 'Please set the location of the server.';
+      }
       if (typeof obj === "string") {
         obj = {
           type: 'message',
@@ -20,13 +23,13 @@
         throw "Make sure the object meets the form: { type:'', body:'' }";
       }
       if (this.key === void 0) {
-        throw 'Please set your API key.';
+        throw 'Please set your client key.';
       }
       obj.key = this.key;
       obj.url = (_ref = obj.url) != null ? _ref : document.URL;
       obj.browser = this.browser;
       return $.ajax({
-        url: 'http://0.0.0.0:1116/message',
+        url: "" + this.server + "/message",
         data: obj,
         dataType: 'jsonp',
         statusCode: {

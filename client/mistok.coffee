@@ -2,22 +2,24 @@
 $ = window.jQuery or window.Zepto
 
 class Mistok
-    
+
     log: (obj, callback) ->
+        throw 'Please set the location of the server.' if @server is undefined
+
         if typeof (obj) is "string"
             obj =
                 type: 'message'
                 body: obj
     
         throw "Make sure the object meets the form: { type:'', body:'' }" if obj.type is 'undefined' or obj.body is 'undefined'
-        throw 'Please set your API key.' if @key is undefined
+        throw 'Please set your client key.' if @key is undefined
         
         obj.key = @key
         obj.url = obj.url ? document.URL
         obj.browser = @browser
 
         $.ajax
-            url:      'http://0.0.0.0:1116/message'
+            url:      "#{@server}/message"
             data:     obj
             dataType: 'jsonp'
             statusCode:
