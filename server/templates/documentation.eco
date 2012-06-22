@@ -13,7 +13,7 @@
 
         <script type="text/coffeescript">
         $ ->
-            Mistok.key = 'S3USPUPHU2H!B9R_FRA4'
+            Mistok.key = '<%= @user.client_key %>'
             $('#test input').click (e) ->
                 btn = $(e.target)
                 switch btn.attr 'data-type'
