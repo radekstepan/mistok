@@ -104,7 +104,11 @@ router.get '/message', (request, response) ->
 # Documentation.
 router.get '/documentation', (request, response) ->
     authorize request, response, (user) ->
-        render request, response, 'documentation'
+        # Get the associated user's client_key
+        db.users.fetch limit:1, ( (doc, key) -> key is user ), (error, results) ->
+            return log error, response if error
+
+            render request, response, 'documentation', 'user': results[0]
 
 # Logout.
 router.get '/logout', (request, response) ->
