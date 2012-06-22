@@ -15,11 +15,11 @@ Monitor your client-side JavaScript. Detect exceptions and log messages.
 You can install all dependencies by running:
 
 ```bash
-npm install coffee-script
+npm install coffee-script -g
 npm install -d
 ```
 
-1. [coffeescript](http://coffeescript.org).
+1. [coffee-script](http://coffeescript.org).
 2. `fs` (node stdlib) for reading in files.
 3. `url` (node stdlib) for parsing request params.
 4. `http` (node stdlib) for listening to your request-y music.
@@ -69,3 +69,9 @@ Start the app:
 ```bash
 ./server.sh
 ```
+
+#### Notes:
+
+1. Expects you to use **Google OpenID auth** automatically creating an account for you on the server upon authentication.
+2. Uses flat file databases.
+3. Uses custom NIH web server.
