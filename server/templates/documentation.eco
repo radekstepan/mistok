@@ -14,6 +14,7 @@
         <script type="text/coffeescript">
         $ ->
             Mistok.key = '<%= @user.client_key %>'
+            Mistok.server = 'http://<%= @host %>'
             $('#test input').click (e) ->
                 btn = $(e.target)
                 switch btn.attr 'data-type'
@@ -51,12 +52,27 @@
                     
                     <div id="content">
                         <div class="float left">                            
-                            <article id="config">
+                            <article>
                                 <header><h3>config</h3></header>
+
+                                <p>Point to the Mistök client script and set it up with your key:</p>
 
 <pre>&lt;script src="http://<%= @host %>/js/mistok.js"&gt;&lt;/script&gt;
 &lt;script&gt;
-    Mistok.key = '<%= @user.client_key %>'
+    Mistok.key = '<%= @user.client_key %>';
+    Mistok.server = 'http://<%= @host %>';
+&lt;/script&gt;</pre>
+                            </article>
+
+                            <article>
+                                <header><h3>Custom messages</h3></header>
+
+                                <p>To trigger a custom message do the following:</p>
+
+<pre>&lt;script&gt;
+    Mistok.log('Test message', function(code) {
+        // HTTP code of the response (either 200 or 404)
+    });
 &lt;/script&gt;</pre>
                             </article>
                         </div>
