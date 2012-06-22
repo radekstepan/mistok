@@ -55,7 +55,7 @@
                             <article id="config">
                                 <header><h3>config</h3></header>
 
-<pre>&lt;script src="/js/mistok.js"&gt;&lt;/script&gt;
+<pre>&lt;script src="http://<%= @host %>/js/mistok.js"&gt;&lt;/script&gt;
 &lt;script&gt;
     Mistok.key = '<%= @user.client_key %>'
 &lt;/script&gt;</pre>
