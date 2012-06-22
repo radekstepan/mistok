@@ -11,26 +11,27 @@
         <script src="/js/jquery.min.js"></script>
         <script src="/js/mynd.min.js"></script>
 
-        <script type="text/coffeescript">
-        $ ->
-            data = []
-            for x in [0...30]
-                data.push
-                    description: 'day'
-                    data: [ Math.floor(Math.random() * 10), Math.floor(Math.random() * 3) ]
-            
-            chart = new Mynd.Chart.column(
-                el: $("article#chart div.svg")
-                data: data
-                width: 725
-                height: 200
+        <script>
+        $(function() {
+            var chart, data, x;
+            data = [];
+            for (x = 0; x < 30; x++) {
+                data.push({
+                    description: 'day',
+                    data: [Math.floor(Math.random() * 10), Math.floor(Math.random() * 3)]
+                });
+            }
+            chart = new Mynd.Chart.column({
+                el: $("article#chart div.svg"),
+                data: data,
+                width: 725,
+                height: 200,
                 isStacked: true
-            )
-            chart.padding.barPadding = 0.3
-            chart.render()
+            });
+            chart.padding.barPadding = 0.3;
+            chart.render();
+        });
         </script>
-
-        <script src="/js/coffee-script.min.js"></script>
     </head>
     <body>
         <header id="top">

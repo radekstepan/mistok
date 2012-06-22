@@ -11,23 +11,29 @@
         <script src="/js/jquery.min.js"></script>
         <script src="/js/mistok.js"></script>
 
-        <script type="text/coffeescript">
-        $ ->
-            Mistok.key = '<%= @user.client_key %>'
-            Mistok.server = 'http://<%= @host %>'
-            $('#test input').click (e) ->
-                btn = $(e.target)
-                switch btn.attr 'data-type'
-                    when 'message'
-                        Mistok.log 'Test message', (code) ->
-                            switch code
-                                when 200 then btn.addClass 'btn-success'
-                                when 404 then btn.addClass 'btn-danger'
-                    when 'exception'
-                        throw Error 'Test exception'
+        <script>
+        $(function() {
+            Mistok.key = '<%= @user.client_key %>';
+            Mistok.server = 'http://<%= @host %>';
+            $('#test input').click(function(e) {
+                var btn;
+                btn = $(e.target);
+                switch (btn.attr('data-type')) {
+                    case 'message':
+                        return Mistok.log('Test message', function(code) {
+                            switch (code) {
+                                case 200:
+                                    return btn.addClass('btn-success');
+                                case 404:
+                                    return btn.addClass('btn-danger');
+                            }
+                        });
+                    case 'exception':
+                        throw Error('Test exception');
+                }
+            });
+        });
         </script>
-
-        <script src="/js/coffee-script.min.js"></script>
     </head>
     <body>
         <header id="top">
