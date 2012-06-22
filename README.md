@@ -38,10 +38,10 @@ npm install -d
 Point to the client script and set it up with your key and server.
 
 ```html
-<script src="http://mistok.app:1116/js/mistok.js"></script>
+<script src="http://node.app:1116/js/mistok.js"></script>
 <script>
     Mistok.key = 'CCB4-7AEB-71BD';
-    Mistok.server = 'http://mistok.app:1116';
+    Mistok.server = 'http://node.app:1116';
 </script>
 ```
 
@@ -60,7 +60,7 @@ To trigger a custom message do the following:
 Configure the `port` and `host` vars in `server/server.coffee`, they are setup for local development:
 
 ```javascript
-host = 'mistok.app:1116'
+host = 'node.app:1116'
 port = 1116
 ```
 

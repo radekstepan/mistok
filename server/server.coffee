@@ -11,7 +11,7 @@ openid  = require 'openid'
 
 # -------------------------------------------------------------------
 # Config.
-host = 'mistok.app:1116'
+host = 'node.app:1116'
 port = 1116
 
 # -------------------------------------------------------------------
@@ -130,8 +130,6 @@ router.get '/delete', (request, response) ->
                 key is message and doc.key is users[0].client_key
             ), (error, messages) ->
                 if error or messages.length isnt 1 then return die()
-
-                console.log messages
 
                 # Actually remove.
                 db.messages.remove messages[0]._key, (error) ->
