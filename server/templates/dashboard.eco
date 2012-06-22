@@ -87,7 +87,7 @@
                                                         <li>line <%= exception.line %></li>
                                                     </ul>
                                                 </td>
-                                                <td><button class="btn btn-mini" href="#">Remove</button></td>
+                                                <td><a class="btn btn-mini" href="/delete?message=<%= exception._key %>">Remove</a></td>
                                             </tr>
                                         <% end %>
                                     </tbody>
@@ -161,7 +161,7 @@
                                                     at <span class="url"><%= message.url %></span> on line <span class="line"><%= message.line %></span>
                                                 <% end %>
                                             </td>
-                                            <td><button class="btn btn-mini" href="#">Remove</button></td>
+                                            <td><a class="btn btn-mini" href="/delete?message=<%= message._key %>">Remove</a></td>
                                         </tr>
                                     <% end %>
                                 </tbody>
