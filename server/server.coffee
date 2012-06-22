@@ -48,7 +48,7 @@ router.get '/', (request, response) ->
                     month:      [ 0, 0 ]
                     lastMonth:  [ 0, 0 ]
                 for message in log
-                    type = (message.type is 'exception') + 0
+                    type = (message.type is 'message') + 0
                     if message.timestamp > today # today
                         stats.today[type] += message.count
                         stats.week[type] += message.count
@@ -85,10 +85,11 @@ router.get '/message', (request, response) ->
         desc: 'timestamp'
         limit: 1
     , ((doc, key) ->
-        (doc.timestamp >= hour and doc.type is message.type and doc.body is message.body and doc.url is message.url and doc.line is message.line)
+        (doc.timestamp >= hour and doc.type is message.type and doc.body is message.body and doc.url is message.url and doc.line is message.line and doc.line is message.browser)
     ), (error, results) ->
         return log error, response if error and error.message isnt 'No records.'
 
+        # Update an existing record.
         for result in results
             return db.messages.update(result._key,
                 count: result.count + 1
@@ -99,6 +100,7 @@ router.get '/message', (request, response) ->
                     response.end()
             )
 
+        # Make a new record.
         db.messages.guid (key) ->
             db.messages.set key, message, (error) ->
                 return log error, response if error

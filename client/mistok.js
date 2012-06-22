@@ -53,7 +53,7 @@
           } else {
             return 'safari';
           }
-        } else if ($.browser.firefox) {
+        } else if ($.browser.firefox || $.browser.mozilla) {
           return 'firefox';
         } else if ($.browser.msie) {
           return 'explorer';

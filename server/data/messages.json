@@ -42,3 +42,57 @@ ec1e-6e1c-253a._key	"ec1e-6e1c-253a"
 67e2-81b0-7ed2.timestamp	1340364435683
 67e2-81b0-7ed2.count	1
 67e2-81b0-7ed2._key	"67e2-81b0-7ed2"
+67e2-81b0-7ed2.count	2
+67e2-81b0-7ed2._key	"67e2-81b0-7ed2"
+67e2-81b0-7ed2.count	3
+67e2-81b0-7ed2._key	"67e2-81b0-7ed2"
+b48f-8ccb-b7a9.callback	"jQuery17205668193292804062_1340365063570"
+b48f-8ccb-b7a9.type	"message"
+b48f-8ccb-b7a9.body	"Test message"
+b48f-8ccb-b7a9.key	"S3USPUPHU2H!B9R_FRA4"
+b48f-8ccb-b7a9.url	"http://mistok.app:1116/documentation"
+b48f-8ccb-b7a9.browser	"chrome"
+b48f-8ccb-b7a9._	"1340365064626"
+b48f-8ccb-b7a9.timestamp	1340365064630
+b48f-8ccb-b7a9.count	1
+b48f-8ccb-b7a9._key	"b48f-8ccb-b7a9"
+e7c4-b87f-64d4.callback	"jQuery17201314281611788316_1340365127468"
+e7c4-b87f-64d4.type	"exception"
+e7c4-b87f-64d4.body	"Test exception"
+e7c4-b87f-64d4.url	"http://mistok.app:1116/js/coffee-script.min.js"
+e7c4-b87f-64d4.line	"25"
+e7c4-b87f-64d4.key	"S3USPUPHU2H!B9R_FRA4"
+e7c4-b87f-64d4.browser	"unknown"
+e7c4-b87f-64d4._	"1340365132328"
+e7c4-b87f-64d4.timestamp	1340365132334
+e7c4-b87f-64d4.count	1
+e7c4-b87f-64d4._key	"e7c4-b87f-64d4"
+b48f-8ccb-b7a9.count	2
+b48f-8ccb-b7a9._key	"b48f-8ccb-b7a9"
+e7c4-b87f-64d4.count	2
+e7c4-b87f-64d4._key	"e7c4-b87f-64d4"
+b48f-8ccb-b7a9.count	3
+b48f-8ccb-b7a9._key	"b48f-8ccb-b7a9"
+b48f-8ccb-b7a9.count	4
+b48f-8ccb-b7a9._key	"b48f-8ccb-b7a9"
+9c0c-decb-299d.callback	"jQuery17208271589080363433_1340365502434"
+9c0c-decb-299d.type	"message"
+9c0c-decb-299d.body	"Test message"
+9c0c-decb-299d.key	"S3USPUPHU2H!B9R_FRA4"
+9c0c-decb-299d.url	"http://mistok.app:1116/documentation"
+9c0c-decb-299d.browser	"firefox"
+9c0c-decb-299d._	"1340365503990"
+9c0c-decb-299d.timestamp	1340365503998
+9c0c-decb-299d.count	1
+9c0c-decb-299d._key	"9c0c-decb-299d"
+701a-9379-b5e3.callback	"jQuery17208271589080363433_1340365502435"
+701a-9379-b5e3.type	"exception"
+701a-9379-b5e3.body	"Test exception"
+701a-9379-b5e3.url	"http://mistok.app:1116/js/coffee-script.min.js"
+701a-9379-b5e3.line	"25"
+701a-9379-b5e3.key	"S3USPUPHU2H!B9R_FRA4"
+701a-9379-b5e3.browser	"firefox"
+701a-9379-b5e3._	"1340365506178"
+701a-9379-b5e3.timestamp	1340365506227
+701a-9379-b5e3.count	1
+701a-9379-b5e3._key	"701a-9379-b5e3"
