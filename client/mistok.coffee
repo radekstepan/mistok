@@ -4,15 +4,15 @@ $ = window.jQuery or window.Zepto
 class Mistok
 
     log: (obj, callback) ->
-        throw 'Please set the location of the server.' if @server is undefined
+        throw 'Please set the location of the server.' unless @server?
 
         if typeof (obj) is "string"
             obj =
                 type: 'message'
                 body: obj
     
-        throw "Make sure the object meets the form: { type:'', body:'' }" if obj.type is 'undefined' or obj.body is 'undefined'
-        throw 'Please set your client key.' if @key is undefined
+        throw "Make sure the object meets the form: { type:'', body:'' }" unless obj.type? or obj.body?
+        throw 'Please set your client key.' unless @key?
         
         obj.key = @key
         obj.url = obj.url ? document.URL
