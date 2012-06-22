@@ -23,11 +23,7 @@ router.get = (route, callback) -> router.routes[route] = callback
 router.get '/', (request, response) ->
     authorize request, response, (user) ->
         # Get the client_key for our user.
-        db.users.fetch
-            limit: 1
-        , ((doc, key) ->
-            key is user
-        ), (error, results) ->
+        db.users.fetch limit:1, ( (doc, key) -> key is user ), (error, results) ->
             return log error, response if error
 
             client_key = results[0].client_key
@@ -105,17 +101,45 @@ router.get '/message', (request, response) ->
                 count: result.count + 1
             , (error) ->
                 return log error, response if error
-                db.messages.dump true, ->
-                    console.log 'Database dumped'.blue
-                    response.end()
+                response.end()
             )
 
         # Make a new record.
         db.messages.guid (key) ->
             db.messages.set key, message, (error) ->
                 return log error, response if error
-                db.messages.dump true, ->
-                    console.log 'Database dumped'.blue
+                response.end()
+
+# Delete a message.
+router.get '/delete', (request, response) ->
+    die = ->
+        response.writeHead 400
+        response.end()
+
+    message = (url.parse(request.url, true).query)?.message
+
+    if not message? then die()
+
+    authorize request, response, (user) ->
+        # Get the client_key for our user.
+        db.users.fetch limit:1, ( (doc, key) -> key is user ), (error, users) ->
+            return log error, response if error
+
+            # Now remove the message in question provided it exists and we are associated with it.
+            db.messages.fetch limit:1, ( (doc, key) ->
+                key is message and doc.key is users[0].client_key
+            ), (error, messages) ->
+                if error or messages.length isnt 1 then return die()
+
+                console.log messages
+
+                # Actually remove.
+                db.messages.remove messages[0]._key, (error) ->
+                    if error then die()
+
+                    # Redir to index.
+                    response.writeHead 302,
+                        Location: "http://#{host}/"
                     response.end()
 
 # Documentation.
@@ -214,10 +238,8 @@ router.get '/openid/verify', (request, response) ->
 
                                 db.users.set userKey, user, (error) ->
                                     return log error, response if error
-                                    db.users.dump true, ->
-                                        console.log 'Database dumped'.blue
-                                        # Save the cookie for the new user
-                                        saveCookie userKey, response
+                                    # Save the cookie for the new user
+                                    saveCookie userKey, response
                             ), 'client_key'
                     else return log error, response
                 else
@@ -334,11 +356,11 @@ server = http.createServer (request, response) ->
 
 # -------------------------------------------------------------------
 # Load the databases.
-tiny "#{__dirname}/data/messages.json", (error, database) ->
+tiny "#{__dirname}/data/messages.db", (error, database) ->
     throw new String(error).red if error
     db.messages = database
 
-    tiny "#{__dirname}/data/users.json", (error, database) ->
+    tiny "#{__dirname}/data/users.db", (error, database) ->
         db.users = database
 
         # Fire up the server.
