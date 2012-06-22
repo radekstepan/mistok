@@ -38,10 +38,10 @@ npm install -d
 Point to the client script and set it up with your key and server.
 
 ```html
-<script src="http://0.0.0.0:1116/js/mistok.js"></script>
+<script src="http://127.0.0.1:1116/js/mistok.js"></script>
 <script>
     Mistok.key = 'CCB4-7AEB-71BD';
-    Mistok.server = 'http://0.0.0.0:1116';
+    Mistok.server = 'http://127.0.0.1:1116';
 </script>
 ```
 
@@ -60,7 +60,7 @@ To trigger a custom message do the following:
 Configure the `port` and `host` vars in `server/server.coffee`, they are setup for local development:
 
 ```javascript
-host = '0.0.0.0:1116'
+host = '127.0.0.1:1116'
 port = 1116
 ```
 
@@ -75,3 +75,4 @@ Start the app:
 1. Expects you to use **Google OpenID auth** automatically creating an account for you on the server upon authentication.
 2. Uses flat file databases.
 3. Uses custom NIH web server.
+4. When specifying the host, `127.0.0.1` or `0.0.0.0` does not work on Opera while `localhost` does not work in Chrome.
