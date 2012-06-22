@@ -30,7 +30,7 @@ class Mistok
         @browser = do ->
             if $.browser.webkit
                 if !!window.chrome then 'chrome' else 'safari'
-            else if $.browser.firefox then 'firefox'
+            else if $.browser.firefox or $.browser.mozilla then 'firefox'
             else if $.browser.msie then 'explorer'
             else if $.browser.opera then 'opera'
             else 'unknown'
