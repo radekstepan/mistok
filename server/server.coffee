@@ -140,7 +140,7 @@ router.get '/delete', (request, response) ->
 
                 # Actually remove.
                 db.messages.remove messages[0]._key, (error) ->
-                    if error then die()
+                    if error then return die()
 
                     # Redir to index.
                     response.writeHead 302,
@@ -187,7 +187,7 @@ authorize = (request, response, callback) ->
         , ((doc, key) ->
             key is cookie
         ), (error, results) ->
-            if error then redirect()
+            if error then return redirect()
             console.log "User #{cookie} authorized".yellow
             callback cookie
     else redirect()
