@@ -254,7 +254,7 @@ router.get '/openid/verify', (request, response) ->
         else response.end()
 
 # -------------------------------------------------------------------
-# Eco template rendering.
+# Eco template rendering and helpers.
 render = (request, response, filename, data={}) ->
     fs.readFile "./server/templates/#{filename}.eco", "utf8", (err, template) ->
         return log err, response if err
@@ -265,6 +265,21 @@ render = (request, response, filename, data={}) ->
             'Content-Length': resource.length
         response.write resource
         response.end()
+
+Date::pretty = ->
+    diff = new Date().getTime() - @.getTime()
+    day = Math.floor(diff / 8.64e7)
+    return '?' if isNaN(day) or day < 0 or day >= 31
+    if day is 0
+        if diff < 6e4 then "Just now"
+        else if diff < 1.2e5 then "A minute ago"
+        else if diff < 3.6e6 then "#{Math.floor(diff / 6e4)} minutes ago"
+        else if diff < 7.2e6 then "An hour ago"
+        else "#{Math.floor(diff / 3.6e6)} hours ago"
+    else
+        if day is 1 then "Yesterday"
+        else if day < 7 then "#{day} days ago"
+        else "#{Math.ceil(day / 7)} weeks ago"
 
 # -------------------------------------------------------------------
 # LESS CSS rendering.
