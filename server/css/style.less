@@ -95,7 +95,9 @@ header#top { background:#C13536; color:#999; padding:10px; box-shadow:inset 0 -5
     table {
         tbody {
             tr {
-                td:not(:first-child) { font-size:14px; font-weight:bold; }
+                td { white-space:nowrap;
+                    &:not(:first-child) { font-size:14px; font-weight:bold; }
+                }
             }
         }
         span { color:#999; }
