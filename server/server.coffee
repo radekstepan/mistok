@@ -12,8 +12,8 @@ ua      = require 'ua-parser'
 
 # -------------------------------------------------------------------
 # Config.
-host = 'glowing-warrior-1313.herokuapp.com'
-port = 80
+host = 'glowing-warrior-1313.herokuapp.com:1116'
+port = 1116
 
 # -------------------------------------------------------------------
 # Routes.
