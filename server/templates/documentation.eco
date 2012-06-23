@@ -20,14 +20,7 @@
                 btn = $(e.target);
                 switch (btn.attr('data-type')) {
                     case 'message':
-                        return Mistok.log('Test message', function(code) {
-                            switch (code) {
-                                case 200:
-                                    return btn.addClass('btn-success');
-                                case 404:
-                                    return btn.addClass('btn-danger');
-                            }
-                        });
+                        return Mistok.log('Test message');
                     case 'exception':
                         throw Error('Test exception');
                 }
@@ -76,9 +69,7 @@
                                 <p>To trigger a custom message do the following:</p>
 
 <pre>&lt;script&gt;
-    Mistok.log('Test message', function(code) {
-        // HTTP code of the response (either 200 or 404)
-    });
+    Mistok.log('Test message');
 &lt;/script&gt;</pre>
                             </article>
                         </div>

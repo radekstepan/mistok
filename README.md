@@ -8,7 +8,7 @@ Monitor your client-side JavaScript. Detect exceptions and log messages.
 
 ### Client:
 
-* [jQuery](http://jquery.com/) as we use `$.ajax`.
+None.
 
 ### Server:
 
@@ -50,9 +50,7 @@ To trigger a custom message do the following:
 
 ```html
 <script>
-    Mistok.log('Test message', function(code) {
-        // HTTP code of the response (either 200 or 404)
-    });
+    Mistok.log('Test message');
 </script>
 ```
 

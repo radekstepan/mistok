@@ -17,13 +17,10 @@ class Mistok
         obj.key = @key
         obj.url = obj.url ? document.URL
 
-        $.ajax
-            url:      "#{@server}/message"
-            data:     obj
-            dataType: 'jsonp'
-            statusCode:
-                404: -> callback 404 if callback
-                200: -> callback 200 if callback
+        params = []
+        for key, value of obj
+            params.push "#{key}=#{encodeURIComponent(value)}"
+        (new Image).src = "#{@server}/message?" + params.join('&')
 
     constructor: ->
 

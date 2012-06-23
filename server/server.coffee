@@ -87,6 +87,11 @@ router.get '/message', (request, response) ->
     message.count = 1
     message.browser = ua.parse(request.headers['user-agent']).family.toLowerCase()
 
+    # Set MIME to an image.
+    response.writeHead 200,
+        "Content-Type":   "image/png"
+        "Content-Length": 0
+
     # Do we have the same message from upto an hour ago?
     hour = message.timestamp - 3.6e6
     db.messages.fetch

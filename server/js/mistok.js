@@ -7,7 +7,7 @@
   Mistok = (function() {
 
     Mistok.prototype.log = function(obj, callback) {
-      var _ref;
+      var key, params, value, _ref;
       if (this.server == null) {
         throw 'Please set the location of the server.';
       }
@@ -25,23 +25,12 @@
       }
       obj.key = this.key;
       obj.url = (_ref = obj.url) != null ? _ref : document.URL;
-      return $.ajax({
-        url: "" + this.server + "/message",
-        data: obj,
-        dataType: 'jsonp',
-        statusCode: {
-          404: function() {
-            if (callback) {
-              return callback(404);
-            }
-          },
-          200: function() {
-            if (callback) {
-              return callback(200);
-            }
-          }
-        }
-      });
+      params = [];
+      for (key in obj) {
+        value = obj[key];
+        params.push("" + key + "=" + (encodeURIComponent(value)));
+      }
+      return (new Image).src = ("" + this.server + "/message?") + params.join('&');
     };
 
     function Mistok() {
