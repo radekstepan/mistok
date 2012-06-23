@@ -1,17 +1,22 @@
 {
-    "name": "Mistök"
-  , "version": "0.0.1"
-  , "private": true
-  , "dependencies": {
-      "should":        "latest",
-      "mocha":         "latest",
-      "eco":           "latest",
-      "less":          "latest",
-      "colors":        "latest",
-      "mime":          "latest",
-      "coffee-script": "latest",
-      "tiny":          "latest",
-      "openid":        "latest",
-      "ua-parser":     "latest"
-  }
+  "name": "mistok",
+  "author": "Radek <dev@radekstepan.com>",
+  "subdomain": "mistok",
+  "scripts": {
+    "start": "coffee server/server.coffee"
+  },
+  "version": "0.0.1-3",
+  "engines": {
+    "node": "0.6.x"
+  },
+  "dependencies": {
+    "colors": "0.6.0",
+    "less": "1.3.x",
+    "mime": "1.2.x",
+    "openid": "0.4.x",
+    "tiny": "0.0.x",
+    "ua-parser": "0.2.x",
+    "eco": "latest"
+  },
+  "private": true
 }
