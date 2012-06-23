@@ -8,7 +8,7 @@ Monitor your client-side JavaScript. Detect exceptions and log messages.
 
 ### Client:
 
-* [jQuery](http://jquery.com/) as we use `$.ajax` and `$.browser`.
+* [jQuery](http://jquery.com/) as we use `$.ajax`.
 
 ### Server:
 
@@ -29,7 +29,8 @@ npm install -d
 8. [tiny](https://github.com/chjj/node-tiny) for storing data in a flat file.
 9. [openid](https://github.com/havard/node-openid) for a working OpenID client implementation.
 10. [mime](https://github.com/bentomas/node-mime) for comprehensive MIME type mapping.
-11. [colors](https://github.com/Marak/colors.js) for getting colors in node console.
+11. [ua-parser](https://github.com/tobie/ua-parser) for determining User-Agent server side.
+12. [colors](https://github.com/Marak/colors.js) for getting colors in node console.
 
 ## Use:
 

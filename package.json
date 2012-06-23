@@ -11,6 +11,7 @@
       "mime":          "latest",
       "coffee-script": "latest",
       "tiny":          "latest",
-      "openid":        "latest"
+      "openid":        "latest",
+      "ua-parser":     "latest"
   }
 }

@@ -8,6 +8,7 @@ mime    = require 'mime'
 less    = require 'less'
 tiny    = require 'tiny'
 openid  = require 'openid'
+ua      = require 'ua-parser'
 
 # -------------------------------------------------------------------
 # Config.
@@ -84,6 +85,7 @@ router.get '/message', (request, response) ->
     message = url.parse(request.url, true).query
     message.timestamp = new Date().getTime()
     message.count = 1
+    message.browser = ua.parse(request.headers['user-agent']).family.toLowerCase()
 
     # Do we have the same message from upto an hour ago?
     hour = message.timestamp - 3.6e6
