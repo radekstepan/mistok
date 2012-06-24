@@ -1,5 +1,5 @@
 fs      = require 'fs'
-url     = require 'url'
+urlib   = require 'url'
 http    = require 'http'
 util    = require 'util'
 eco     = require 'eco'
@@ -82,7 +82,7 @@ router.get '/', (request, response) ->
 
 # Receive message.
 router.get '/message', (request, response) ->
-    message = url.parse(request.url, true).query
+    message = urlib.parse(request.url, true).query
     message.timestamp = new Date().getTime()
     message.count = 1
     message.browser = ua.parse(request.headers['user-agent']).family.toLowerCase()
