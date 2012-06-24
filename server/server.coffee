@@ -12,8 +12,8 @@ ua      = require 'ua-parser'
 
 # -------------------------------------------------------------------
 # Config.
-host = 'mistok.herokuapp.com'
-port = 80
+host = 'mistok.herokuapp.com:1116'
+port = 1116
 
 # -------------------------------------------------------------------
 # Routes.
