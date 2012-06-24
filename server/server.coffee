@@ -13,7 +13,7 @@ ua      = require 'ua-parser'
 # -------------------------------------------------------------------
 # Config.
 port = process.env.PORT or 1116
-host = "mistok.herokuapp.com:#{port}"
+host = 'mistok.herokuapp.com'
 
 # -------------------------------------------------------------------
 # Routes.
