@@ -51,6 +51,9 @@ router.get '/', (request, response) ->
                     # Calculate the stats.
                     today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0).getTime()
 
+                    # Last 30 days in the chart.
+                    chart = [0...30].map -> [ 0, 0 ]
+
                     stats =
                         today:      [ 0, 0 ]
                         lastToday:  [ 0, 0 ]
@@ -79,9 +82,14 @@ router.get '/', (request, response) ->
                         else if message.timestamp > today - 5.184e9 # last month (assume 30)
                             stats.lastMonth[type] += message.count
 
+                        # And also position it in the chart.
+                        idx = Math.floor((today + 8.64e7 - message.timestamp) / 8.64e7)
+                        chart[idx]?[type] += message.count
+
                     render request, response, 'dashboard',
                         'log':        log
                         'stats':      stats
+                        'chart':      chart
                         'exceptions': exceptions
 
 # Receive message.

@@ -15,17 +15,17 @@
         $(function() {
             var chart, data, x;
             data = [];
-            for (x = 0; x < 30; x++) {
+            <% for day in @chart: %>
                 data.push({
                     description: 'day',
-                    data: [Math.floor(Math.random() * 10), Math.floor(Math.random() * 3)]
+                    data: [<%= day %>]
                 });
-            }
+            <% end %>
             chart = new Mynd.Chart.column({
-                el: $("article#chart div.svg"),
-                data: data,
-                width: 725,
-                height: 200,
+                el:        $("article#chart div.svg"),
+                data:      data,
+                width:     725,
+                height:    200,
                 isStacked: true
             });
             chart.padding.barPadding = 0.3;
