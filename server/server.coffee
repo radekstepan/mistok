@@ -12,8 +12,12 @@ ua      = require 'ua-parser'
 
 # -------------------------------------------------------------------
 # Config.
-port = process.env.PORT or 1116
-host = 'mistok.herokuapp.com'
+if process.env.PORT?
+    port = process.env.PORT
+    host = 'mistok.herokuapp.com'
+else
+    port = 1116
+    host = '127.0.0.1:1116'
 
 # -------------------------------------------------------------------
 # Routes.
@@ -45,7 +49,7 @@ router.get '/', (request, response) ->
                     return log error, response if error and error.message isnt 'No records.'
 
                     # Calculate the stats.
-                    today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9).getTime() # today at 9AM
+                    today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0).getTime()
 
                     stats =
                         today:      [ 0, 0 ]
