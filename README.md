@@ -15,7 +15,6 @@ None.
 You can install all dependencies by running:
 
 ```bash
-npm install coffee-script -g
 npm install -d
 ```
 
@@ -39,10 +38,10 @@ npm install -d
 Point to the client script and set it up with your key and server.
 
 ```html
-<script src="http://mistok.jit.su/js/mistok.js"></script>
+<script src="http://mistok.herokuapp.com/js/mistok.js"></script>
 <script>
     Mistok.key = '[YOUR_KEY]';
-    Mistok.server = 'http://mistok.jit.su';
+    Mistok.server = 'http://mistok.herokuapp.com';
 </script>
 ```
 
@@ -56,18 +55,67 @@ To trigger a custom message do the following:
 
 ### Server:
 
-Configure the `port` and `host` vars in `server/server.coffee`, they are setup for Nodejitsu deployment:
+Configure the `port` and `host` vars in `server/server.coffee`, they are setup for [Heroku](http://heroku.com) deployment now:
 
 ```javascript
-host = 'mistok.jit.su'
-port = 80
+port = process.env.PORT or 1116
+host = 'mistok.herokuapp.com'
 ```
 
-Start the server app:
+Start the server app (making sure CoffeeScript is in your PATH):
 
 ```bash
-npm start
+coffee server/server.coffee
 ```
+
+#### Heroku:
+
+For [Heroku](http://heroku.com) deployment, make sure you have an account.
+
+Login to Heroku providing email and password:
+
+```bash
+heroku login
+```
+
+Create the app if does not exist already in your account:
+
+```bash
+heroku create
+```
+
+Deploy your code:
+
+```bash
+git push heroku master
+```
+
+Check the app is running:
+
+```bash
+heroku ps
+```
+
+If not, see the logs:
+
+```bash
+heroku logs
+```
+
+To login to the console:
+
+```bash
+heroku run bash
+```
+
+If you need to rename the app:
+
+```bash
+git remote rm heroku
+git remote add heroku git@heroku.com:yourappname.git
+```
+
+Bear in mind that the `Procfile` specifies a shell script to run, as we need to add the CoffeeScript compiler to the PATH first. We also make use of the `process.env.PORT` specified by Heroku that is used internally only.
 
 #### Notes:
 
