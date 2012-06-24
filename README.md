@@ -120,6 +120,6 @@ Bear in mind that the `Procfile` specifies a shell script to run, as we need to 
 #### Notes:
 
 1. Expects you to use **Google OpenID auth** automatically creating an account for you on the server upon authentication.
-2. Uses flat file databases.
+2. Uses flat file databases. If you have a free Heroku account, everything is held in the memory and nothing saved to the disK!
 3. Uses custom NIH web server.
 4. When specifying the host, `127.0.0.1` or `0.0.0.0` does not work on Opera while `localhost` does not work in Chrome.
