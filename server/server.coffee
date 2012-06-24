@@ -339,28 +339,30 @@ log = (error, response) ->
 # Main rooting.
 server = http.createServer (request, response) ->
 
+    url = request.url.toLowerCase()
+
     if request.method is 'GET'
-        route = router.routes[request.url.split('?')[0]]
+        route = router.routes[url.split('?')[0]]
         if route
-            console.log "#{request.method} #{request.url}".bold
+            console.log "#{request.method} #{url}".bold
             route request, response
         else
             # Public resource?
-            console.log "#{request.method} #{request.url}".grey
+            console.log "#{request.method} #{url}".grey
 
-            file = "./server#{request.url}"
+            file = "./server#{url}"
             # LESS?
             if file[-9...] is '.less.css'
                 css request, response, file.replace('.less.css', '.less')
             else
                 # Data folder?
-                if request.url[0...5] is '/data'
+                if url[0...5] is '/data'
                     log { 'message': 'Access forbidden' }, response
                 else
                     fs.stat file, (err, stat) ->
                         if err
                             # 404.
-                            console.log "#{request.url} not found".red
+                            console.log "#{url} not found".red
                             response.writeHead 404
                             response.end()
                         else
