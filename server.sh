@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
-npm start
+export PATH=$PATH:node_modules/coffee-script/bin/
+coffee server/server.coffee

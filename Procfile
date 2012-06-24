@@ -1,1 +1,1 @@
-web: coffee server/server.coffee
+web: ./server.sh
