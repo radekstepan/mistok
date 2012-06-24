@@ -378,13 +378,23 @@ server = http.createServer (request, response) ->
                             response.writeHead 404
                             response.end()
                         else
-                            # Stream file.
-                            response.writeHead 200,
-                                "Content-Type":   mime.lookup file
-                                "Content-Length": stat.size
+                            # Cache control.
+                            mtime = stat.mtime
+                            etag = stat.size + '-' + Date.parse(mtime)
+                            response.setHeader('Last-Modified', mtime);
 
-                            util.pump fs.createReadStream(file), response, (err) ->
-                                return log err, response if err
+                            if request.headers['if-none-match'] is etag
+                                response.statusCode = 304
+                                response.end()
+                            else
+                                # Stream file.
+                                response.writeHead 200,
+                                    'Content-Type':   mime.lookup file
+                                    'Content-Length': stat.size
+                                    'ETag':           etag
+
+                                util.pump fs.createReadStream(file), response, (err) ->
+                                    return log err, response if err
     
     else log { 'message': 'No matching route' }, response
 
