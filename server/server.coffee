@@ -123,7 +123,7 @@ router.get '/delete', (request, response) ->
         response.writeHead 400
         response.end()
 
-    message = (url.parse(request.url, true).query)?.message
+    message = (urlib.parse(request.url, true).query)?.message
 
     if not message? then die()
 
