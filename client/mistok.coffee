@@ -1,6 +1,3 @@
-# For our purposes, `$` means jQuery or Zepto.
-$ = window.jQuery or window.Zepto
-
 class Mistok
 
     log: (obj, callback) ->
