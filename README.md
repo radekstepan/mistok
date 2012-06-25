@@ -62,6 +62,8 @@ $ mkdir /data/db
 $ ./mongod
 ```
 
+Deploying locally, the server expects to find the database at `localhost:27017`, the default.
+
 ### Server:
 
 Configure the `port` and `host` vars in `server/server.coffee`, they are setup for [Heroku](http://heroku.com) deployment now:
@@ -77,7 +79,7 @@ Start the server app (making sure CoffeeScript is in your PATH):
 $ coffee server/server.coffee
 ```
 
-#### Heroku:
+### Heroku:
 
 For [Heroku](http://heroku.com) deployment, make sure you have an account.
 
@@ -91,6 +93,12 @@ Create the app if does not exist already in your account:
 
 ```bash
 $ heroku create
+```
+
+Set environment variables, like:
+
+```bash
+$ heroku config:add MONGOHQ_USER=[YOUR_USERNAME] MONGOHQ_PASSWORD=[YOUR_PASSWORD]
 ```
 
 Deploy your code:

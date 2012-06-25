@@ -16,13 +16,17 @@ mongodb = require 'mongodb'
 if process.env.PORT?
     port = process.env.PORT
     host = 'mistok.herokuapp.com'
+
+    db = new mongodb.Db 'app5496588', new mongodb.Server('staff.mongohq.com', 10098,
+        auto_reconnect: true
+    )
+    mongodb.Db.admin().authenticate(process.env.MONGOHQ_USER, process.env.MONGOHQ_PASSWORD);
 else
     port = 1116
     host = '127.0.0.1:1116'
-
-db = new mongodb.Db 'mistok', new mongodb.Server('localhost', 27017,
-    auto_reconnect: true
-)
+    db = new mongodb.Db 'mistok', new mongodb.Server('localhost', 27017,
+        auto_reconnect: true
+    )
 
 # -------------------------------------------------------------------
 # Routes.
