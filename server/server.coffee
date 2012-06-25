@@ -379,7 +379,7 @@ if process.env.PORT? # Heroku
     db = new mongodb.Db 'app5496588', new mongodb.Server('staff.mongohq.com', 10098,
         'auto_reconnect': true
     )
-    db.open (err, db) ->
+    db.open (err) ->
         throw err.message.red if err
         db.authenticate process.env.MONGOHQ_USER, process.env.MONGOHQ_PASSWORD, (err, db) ->
             throw err.message.red if err
