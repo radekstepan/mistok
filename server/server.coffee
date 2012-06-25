@@ -360,7 +360,7 @@ hex = -> (((1 + Math.random()) * 0x10000) | 0).toString(16).substring 1
 
 # -------------------------------------------------------------------
 # Fire up the server.
-server = (db) ->
+startup = (db) ->
     db.createCollection "messages", (err, collection) ->
         db.messages = collection
         db.createCollection "messages", (err, collection) ->
@@ -384,7 +384,7 @@ if process.env.PORT? # Heroku
         db.authenticate process.env.MONGOHQ_USER, process.env.MONGOHQ_PASSWORD, (err) ->
             throw err.message.red if err
 
-            server db
+            startup db
 else # Local development.
     port = 1116
     host = '127.0.0.1:1116'
@@ -395,4 +395,4 @@ else # Local development.
     db.open (err, db) ->
         throw err.message.red if err
 
-        server db
+        startup db
