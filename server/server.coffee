@@ -381,7 +381,7 @@ if process.env.PORT? # Heroku
     )
     db.open (err) ->
         throw err.message.red if err
-        db.authenticate process.env.MONGOHQ_USER, process.env.MONGOHQ_PASSWORD, (err, db) ->
+        db.authenticate process.env.MONGOHQ_USER, process.env.MONGOHQ_PASSWORD, (err) ->
             throw err.message.red if err
 
             server db
