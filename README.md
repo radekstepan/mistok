@@ -66,11 +66,28 @@ Deploying locally, the server expects to find the database at `localhost:27017`,
 
 ### Server:
 
-Configure the `port` and `host` vars in `server/server.coffee`, they are setup for [Heroku](http://heroku.com) deployment now:
+Configure the vars in `config.json`, by default they are setup for [Heroku](http://heroku.com) production and local development environment:
 
-```javascript
-port = process.env.PORT or 1116
-host = 'mistok.herokuapp.com'
+```json
+{
+    "development": {
+        "port": 1116,
+        "host": "127.0.0.1:1116",
+        "mongodb": {
+            "db": "mistok",
+            "port": 27017,
+            "host": "localhost"
+        }
+    },
+    "production": {
+        "host": "mistok.herokuapp.com",
+        "mongodb": {
+            "db": "app5496588",
+            "port": 10098,
+            "host": "staff.mongohq.com"
+        }
+    }
+}
 ```
 
 Start the server app (making sure CoffeeScript is in your PATH):

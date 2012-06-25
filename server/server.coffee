@@ -12,6 +12,42 @@ ua      = require 'ua-parser'
 mongodb = require 'mongodb'
 
 # -------------------------------------------------------------------
+# Config.
+json = fs.readFileSync './config.json'
+try
+    CONFIG = JSON.parse json
+catch err
+    throw err.message.red
+
+if process.env.PORT? # Heroku
+    port = process.env.PORT
+    host = CONFIG.production.host
+    db = new mongodb.Db(CONFIG.production.mongodb.db,
+        new mongodb.Server(CONFIG.production.mongodb.host, CONFIG.production.mongodb.port,
+            'auto_reconnect': true
+        )
+    )
+    db.open (err) ->
+        throw err.message.red if err
+        db.authenticate process.env.MONGOHQ_USER, process.env.MONGOHQ_PASSWORD, (err) ->
+            throw err.message.red if err
+
+            startup db
+
+else # Local development.
+    port = CONFIG.development.port
+    host = CONFIG.development.host
+    db = new mongodb.Db(CONFIG.development.mongodb.db,
+        new mongodb.Server(CONFIG.development.mongodb.host, CONFIG.development.mongodb.port,
+            'auto_reconnect': true
+        )
+    )
+    db.open (err, db) ->
+        throw err.message.red if err
+
+        startup db
+
+# -------------------------------------------------------------------
 # Routes.
 router = routes: {}
 router.get = (route, callback) -> router.routes[route] = callback
@@ -378,30 +414,3 @@ startup = (db) ->
             # Fire up the server.
             server.listen port
             console.log "Listening on port #{port}".green.bold
-
-# -------------------------------------------------------------------
-# Config.
-if process.env.PORT? # Heroku
-    port = process.env.PORT
-    host = 'mistok.herokuapp.com'
-
-    db = new mongodb.Db 'app5496588', new mongodb.Server('staff.mongohq.com', 10098,
-        'auto_reconnect': true
-    )
-    db.open (err) ->
-        throw err.message.red if err
-        db.authenticate process.env.MONGOHQ_USER, process.env.MONGOHQ_PASSWORD, (err) ->
-            throw err.message.red if err
-
-            startup db
-else # Local development.
-    port = 1116
-    host = '127.0.0.1:1116'
-    db = new mongodb.Db 'mistok', new mongodb.Server('localhost', 27017,
-        auto_reconnect: true
-    )
-
-    db.open (err, db) ->
-        throw err.message.red if err
-
-        startup db

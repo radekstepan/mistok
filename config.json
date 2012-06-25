@@ -1,0 +1,19 @@
+{
+    "development": {
+        "port": 1116,
+        "host": "127.0.0.1:1116",
+        "mongodb": {
+            "db": "mistok",
+            "port": 27017,
+            "host": "localhost"
+        }
+    },
+    "production": {
+        "host": "mistok.herokuapp.com",
+        "mongodb": {
+            "db": "app5496588",
+            "port": 10098,
+            "host": "staff.mongohq.com"
+        }
+    }
+}
