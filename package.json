@@ -17,7 +17,8 @@
     "openid": "0.4.x",
     "tiny": "0.0.x",
     "ua-parser": "0.2.x",
-    "eco": "latest"
+    "eco": "latest",
+    "mongojs": "latest"
   },
   "private": true,
   "repository": {

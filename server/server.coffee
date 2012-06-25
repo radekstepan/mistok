@@ -19,6 +19,10 @@ else
     port = 1116
     host = '127.0.0.1:1116'
 
+db = require("mongojs").connect "localhost:27017/mistok", [ "users", "messages" ]
+
+hex = -> (((1 + Math.random()) * 0x10000) | 0).toString(16).substring 1
+
 # -------------------------------------------------------------------
 # Routes.
 router = routes: {}
@@ -27,70 +31,67 @@ router.get = (route, callback) -> router.routes[route] = callback
 # Dashboard.
 router.get '/', (request, response) ->
     authorize request, response, (user) ->
-        # Get the client_key for our user.
-        db.users.fetch limit:1, ( (doc, key) -> key is user ), (error, results) ->
-            return log error, response if error
 
-            client_key = results[0].client_key
+        console.log user
 
-            now = new Date()
+        now = new Date()
 
-            # Get exceptions over past 14 days.
-            fourteen = now.getTime() - 1.2096e9
-            db.messages.fetch
-                desc: 'timestamp'
-            , ((doc, key) ->
-                doc.type is 'exception' and doc.key is client_key
-            ), (error, exceptions) ->
+        # Get exceptions over past 14 days.
+        fourteen = now.getTime() - 1.2096e9
+        db.messages.fetch
+            desc: 'timestamp'
+        , ((doc, key) ->
+            doc.type is 'exception' and doc.key is client_key
+        ), (error, exceptions) ->
+            return log error, response if error and error.message isnt 'No records.'
+
+            # Get the full log.
+            db.messages.fetch desc: 'timestamp', ( (doc) -> doc.key is client_key ), (error, log) ->
                 return log error, response if error and error.message isnt 'No records.'
 
-                # Get the full log.
-                db.messages.fetch desc: 'timestamp', ( (doc) -> doc.key is client_key ), (error, log) ->
-                    return log error, response if error and error.message isnt 'No records.'
+                # Calculate the stats.
+                today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0).getTime()
 
-                    # Calculate the stats.
-                    today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0).getTime()
+                # Last 30 days in the chart.
+                chart = [0...30].map -> [ 0, 0 ]
 
-                    # Last 30 days in the chart.
-                    chart = [0...30].map -> [ 0, 0 ]
+                stats =
+                    today:      [ 0, 0 ]
+                    lastToday:  [ 0, 0 ]
+                    week:       [ 0, 0 ]
+                    lastWeek:   [ 0, 0 ]
+                    month:      [ 0, 0 ]
+                    lastMonth:  [ 0, 0 ]
+                for message in log
+                    type = (message.type is 'message') + 0
+                    if message.timestamp > today # today
+                        stats.today[type] += message.count
+                        stats.week[type] += message.count
+                        stats.month[type] += message.count
+                    else if message.timestamp > today - 8.64e7 # yesterday
+                        stats.lastToday[type] += message.count
+                        stats.week[type] += message.count
+                        stats.month[type] += message.count
+                    else if message.timestamp > today - 6.048e8 # this week
+                        stats.week[type] += message.count
+                        stats.month[type] += message.count
+                    else if message.timestamp > today - 1.2096e9 # last week
+                        stats.lastWeek[type] += message.count
+                        stats.month[type] += message.count
+                    else if message.timestamp > today - 2.592e9 # this month (assume 30)
+                        stats.month[type] += message.count
+                    else if message.timestamp > today - 5.184e9 # last month (assume 30)
+                        stats.lastMonth[type] += message.count
 
-                    stats =
-                        today:      [ 0, 0 ]
-                        lastToday:  [ 0, 0 ]
-                        week:       [ 0, 0 ]
-                        lastWeek:   [ 0, 0 ]
-                        month:      [ 0, 0 ]
-                        lastMonth:  [ 0, 0 ]
-                    for message in log
-                        type = (message.type is 'message') + 0
-                        if message.timestamp > today # today
-                            stats.today[type] += message.count
-                            stats.week[type] += message.count
-                            stats.month[type] += message.count
-                        else if message.timestamp > today - 8.64e7 # yesterday
-                            stats.lastToday[type] += message.count
-                            stats.week[type] += message.count
-                            stats.month[type] += message.count
-                        else if message.timestamp > today - 6.048e8 # this week
-                            stats.week[type] += message.count
-                            stats.month[type] += message.count
-                        else if message.timestamp > today - 1.2096e9 # last week
-                            stats.lastWeek[type] += message.count
-                            stats.month[type] += message.count
-                        else if message.timestamp > today - 2.592e9 # this month (assume 30)
-                            stats.month[type] += message.count
-                        else if message.timestamp > today - 5.184e9 # last month (assume 30)
-                            stats.lastMonth[type] += message.count
+                    # And also position it in the chart.
+                    idx = Math.floor((today + 8.64e7 - message.timestamp) / 8.64e7)
+                    chart[idx]?[type] += message.count
 
-                        # And also position it in the chart.
-                        idx = Math.floor((today + 8.64e7 - message.timestamp) / 8.64e7)
-                        chart[idx]?[type] += message.count
-
-                    render request, response, 'dashboard',
-                        'log':        log
-                        'stats':      stats
-                        'chart':      chart
-                        'exceptions': exceptions
+                render request, response, 'dashboard',
+                    'log':        log
+                    'stats':      stats
+                    'chart':      chart
+                    'exceptions': exceptions
 
 # Receive message.
 router.get '/message', (request, response) ->
@@ -193,15 +194,13 @@ authorize = (request, response, callback) ->
                 if key is 'mistok_app' then return value
     
     if cookie?
-        # Is a user?
-        db.users.fetch
-            limit: 1
-        , ((doc, key) ->
-            key is cookie
-        ), (error, results) ->
-            if error then return redirect()
+        db.users.findOne
+            _id: cookie
+        , (err, user) ->
+            return redirect() if err or not user
+
             console.log "User #{cookie} authorized".yellow
-            callback cookie
+            callback user
     else redirect()
 
 # -------------------------------------------------------------------
@@ -239,29 +238,21 @@ router.get '/openid/verify', (request, response) ->
                 response.end "<script>window.location='http://#{host}/'</script>"
 
             # Do we already have this user?
-            db.users.fetch
-                limit: 1
-            , ((doc, key) ->
-                doc.identity is identity
-            ), (error, users) ->
-                if error
-                    if error.message is 'No records.'
-                        # Insert new user.
-                        db.users.guid (userKey) ->
-                            db.users.guid ((clientKey) ->
-                                user =
-                                    identity:   identity
-                                    client_key: clientKey
+            db.users.findOne
+                identity: identity
+            , (err, users) ->
+                if err or not users
+                    # Insert new user.
+                    db.users.save
+                        identity:   identity
+                        client_key: "#{hex()}-#{hex()}-#{hex()}"
+                    , (error, saved) ->
+                        return log error, response if error or not saved
 
-                                db.users.set userKey, user, (error) ->
-                                    return log error, response if error
-                                    # Save the cookie for the new user
-                                    saveCookie userKey, response
-                            ), 'client_key'
-                    else return log error, response
+                        saveCookie saved, response
                 else
                     # We have a user. Cookie their key.
-                    saveCookie users[0]._key, response
+                    saveCookie users[0]._id, response
 
         else response.end()
 
@@ -312,35 +303,6 @@ css = (request, response, path) ->
             response.end()
 
 # -------------------------------------------------------------------
-# Helpers.
-db = {}
-hex = -> (((1 + Math.random()) * 0x10000) | 0).toString(16).substring 1
-# Generate a unique key for _key by default or user selected.
-tiny::guid = (callback, customKey) ->
-    self = @
-    (unique = ->
-        # Generate key.
-        key = "#{hex()}-#{hex()}-#{hex()}"
-
-        # Shall we do moar?
-        moar = (error, data) ->
-            if error
-                if error.message is 'Not found.' or error.message is 'No records.' then callback key else throw new String(error).red
-            else
-                console.log "Key #{key} already used".blue
-                unique()
-        # _key
-        if customKey? then self.get key, moar
-        else
-            # Not matching custom key, probably slow as hell.
-            db.users.fetch
-                limit: 1
-            , ((doc, key) ->
-                doc[customKey] is key
-            ), moar
-    )()
-
-# -------------------------------------------------------------------
 # Error 404 logging.
 log = (error, response) ->
     console.log new String(error.message).red
@@ -348,7 +310,7 @@ log = (error, response) ->
     response.end()
 
 # -------------------------------------------------------------------
-# Main rooting.
+# Main routing.
 server = http.createServer (request, response) ->
 
     url = request.url.toLowerCase()
@@ -399,14 +361,6 @@ server = http.createServer (request, response) ->
     else log { 'message': 'No matching route' }, response
 
 # -------------------------------------------------------------------
-# Load the databases.
-tiny "#{__dirname}/data/messages.db", (error, database) ->
-    throw new String(error).red if error
-    db.messages = database
-
-    tiny "#{__dirname}/data/users.db", (error, database) ->
-        db.users = database
-
-        # Fire up the server.
-        server.listen port
-        console.log "Listening on port #{port}".green.bold
+# Fire up the server.
+server.listen port
+console.log "Listening on port #{port}".green.bold
