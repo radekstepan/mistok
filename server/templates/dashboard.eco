@@ -162,7 +162,7 @@
                                                     at <span class="url"><%= message.url %></span> on line <span class="line"><%= message.line %></span>
                                                 <% end %>
                                             </td>
-                                            <td><a class="btn btn-mini" href="/delete?message=<%= message.id %>">Remove</a></td>
+                                            <td><a class="btn btn-mini" href="/delete?message=<%= message._id %>">Remove</a></td>
                                         </tr>
                                     <% end %>
                                 </tbody>

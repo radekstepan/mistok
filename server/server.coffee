@@ -9,6 +9,7 @@ less    = require 'less'
 tiny    = require 'tiny'
 openid  = require 'openid'
 ua      = require 'ua-parser'
+mongodb = require 'mongodb'
 
 # -------------------------------------------------------------------
 # Config.
@@ -19,9 +20,9 @@ else
     port = 1116
     host = '127.0.0.1:1116'
 
-db = require("mongodb").connect "localhost:27017/mistok", [ "users", "messages" ]
-
-hex = -> (((1 + Math.random()) * 0x10000) | 0).toString(16).substring 1
+db = new mongodb.Db 'mistok', new mongodb.Server('localhost', 27017,
+    auto_reconnect: true
+)
 
 # -------------------------------------------------------------------
 # Routes.
@@ -32,72 +33,77 @@ router.get = (route, callback) -> router.routes[route] = callback
 router.get '/', (request, response) ->
     authorize request, response, (user) ->
 
-        # Fetch the full log.
-        db.messages.find
+        # Calculate the stats.
+        now = new Date()
+        today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0).getTime()
+
+        # Full log.
+        log = []
+        # Will hold exceptions of past 14 days.
+        exceptions = []
+        # Last 30 days in the chart.
+        chart = [0...30].map -> [ 0, 0 ]
+        # Stats; totals for periods.
+        stats =
+            today:      [ 0, 0 ]
+            lastToday:  [ 0, 0 ]
+            week:       [ 0, 0 ]
+            lastWeek:   [ 0, 0 ]
+            month:      [ 0, 0 ]
+            lastMonth:  [ 0, 0 ]
+
+        # Stream it.
+        stream = db.messages.find(
             'key': user.client_key
-        , (err, log) ->
-            return log err, response if err
+        ,
+            'sort': [ "timestamp", "desc" ]
+        ).streamRecords()
+        
+        stream.on "data", (message) ->
+            # Save to log.
+            log.push message
 
-            # Reverse order.
-            log = log.reverse()
+            # What type?
+            type = (message.type is 'message') + 0
 
-            # Will hold exceptions of past 14 days.
-            exceptions = []
+            # Position in stats.
+            if message.timestamp > today # today
+                stats.today[type] += message.count
+                stats.week[type] += message.count
+                stats.month[type] += message.count
 
-            # Calculate the stats.
-            now = new Date()
-            today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0).getTime()
-
-            # Last 30 days in the chart.
-            chart = [0...30].map -> [ 0, 0 ]
-
-            stats =
-                today:      [ 0, 0 ]
-                lastToday:  [ 0, 0 ]
-                week:       [ 0, 0 ]
-                lastWeek:   [ 0, 0 ]
-                month:      [ 0, 0 ]
-                lastMonth:  [ 0, 0 ]
+                if message.type is 'exception' then exceptions.push message
             
-            for message in log
-                type = (message.type is 'message') + 0
-                
-                if message.timestamp > today # today
-                    stats.today[type] += message.count
-                    stats.week[type] += message.count
-                    stats.month[type] += message.count
+            else if message.timestamp > today - 8.64e7 # yesterday
+                stats.lastToday[type] += message.count
+                stats.week[type] += message.count
+                stats.month[type] += message.count
 
-                    if message.type is 'exception' then exceptions.push message
-                
-                else if message.timestamp > today - 8.64e7 # yesterday
-                    stats.lastToday[type] += message.count
-                    stats.week[type] += message.count
-                    stats.month[type] += message.count
+                if message.type is 'exception' then exceptions.push message
 
-                    if message.type is 'exception' then exceptions.push message
+            else if message.timestamp > today - 6.048e8 # this week
+                stats.week[type] += message.count
+                stats.month[type] += message.count
 
-                else if message.timestamp > today - 6.048e8 # this week
-                    stats.week[type] += message.count
-                    stats.month[type] += message.count
+                if message.type is 'exception' then exceptions.push message
 
-                    if message.type is 'exception' then exceptions.push message
+            else if message.timestamp > today - 1.2096e9 # last week
+                stats.lastWeek[type] += message.count
+                stats.month[type] += message.count
 
-                else if message.timestamp > today - 1.2096e9 # last week
-                    stats.lastWeek[type] += message.count
-                    stats.month[type] += message.count
+                if message.type is 'exception' then exceptions.push message
 
-                    if message.type is 'exception' then exceptions.push message
+            else if message.timestamp > today - 2.592e9 # this month (assume 30)
+                stats.month[type] += message.count
+            
+            else if message.timestamp > today - 5.184e9 # last month (assume 30)
+                stats.lastMonth[type] += message.count
 
-                else if message.timestamp > today - 2.592e9 # this month (assume 30)
-                    stats.month[type] += message.count
-                
-                else if message.timestamp > today - 5.184e9 # last month (assume 30)
-                    stats.lastMonth[type] += message.count
+            # And also position it in the chart.
+            idx = Math.floor((today + 8.64e7 - message.timestamp) / 8.64e7)
+            chart[idx]?[type] += message.count
 
-                # And also position it in the chart.
-                idx = Math.floor((today + 8.64e7 - message.timestamp) / 8.64e7)
-                chart[idx]?[type] += message.count
-
+        stream.on "end", ->
             render request, response, 'dashboard',
                 'log':        log
                 'stats':      stats
@@ -130,23 +136,18 @@ router.get '/message', (request, response) ->
     , (err, existing) ->
         return log err, response if err
 
-        # Update an existing record.
+        # Update an existing record, don't care if you do it.
         if existing?
             db.messages.update
-                _id: existing._id
+                '_id': existing._id
             ,
-                $inc:
-                    count: 1
-            ,
-                multi: true
-            , (err) ->
-                return log err, response if err
-                response.end()
+                '$inc':
+                    'count': 1
+            response.end()
         else
-            # Make a new record.
-            db.messages.save message, (err, saved) ->
-                return log err, response if err or not saved
-                response.end()
+            # Make a new record, fire & forget.
+            db.messages.insert message
+            response.end()
 
 # Delete a message.
 router.get '/delete', (request, response) ->
@@ -160,17 +161,15 @@ router.get '/delete', (request, response) ->
 
     authorize request, response, (user) ->
 
-        # Now remove the message in question provided it exists and we are associated with it.
-        db.messages.findOne
-            '_id': db.ObjectId message
+        # Now maybe remove the message in question provided it exists and we are associated with it.
+        db.messages.remove
+            '_id': mongodb.ObjectID.createFromHexString message
             'key': user.client_key
-        , (err, message) ->
-            if message then db.messages.remove message._id, ->        
-                # Redir to index.
-                response.writeHead 302,
-                    Location: "http://#{host}/"
-                response.end()
-            else die()
+        
+        # Redir to index.
+        response.writeHead 302,
+            Location: "http://#{host}/"
+        response.end()
 
 # Documentation.
 router.get '/documentation', (request, response) ->
@@ -200,10 +199,10 @@ authorize = (request, response, callback) ->
                 [key, value] = cookie.split '='
                 # Has cookie?
                 if key is 'mistok_app' then return value
-    
+
     if cookie?
         db.users.findOne
-            '_id': db.ObjectId cookie
+            '_id': mongodb.ObjectID.createFromHexString cookie
         , (err, user) ->
             return redirect() if err or not user
 
@@ -251,9 +250,11 @@ router.get '/openid/verify', (request, response) ->
             , (err, user) ->
                 if err or not user
                     # Insert new user.
-                    db.users.save
+                    db.users.insert
                         'identity':   identity
                         'client_key': "#{hex()}-#{hex()}-#{hex()}"
+                    ,
+                        'safe': true
                     , (err, saved) ->
                         return log err, response if err or not saved
 
@@ -369,6 +370,17 @@ server = http.createServer (request, response) ->
     else log { 'message': 'No matching route' }, response
 
 # -------------------------------------------------------------------
-# Fire up the server.
-server.listen port
-console.log "Listening on port #{port}".green.bold
+
+hex = -> (((1 + Math.random()) * 0x10000) | 0).toString(16).substring 1
+
+db.open (err, db) ->
+    throw err.message.red if err
+    
+    db.createCollection "messages", (err, collection) ->
+        db.messages = collection
+        db.createCollection "messages", (err, collection) ->
+            db.users = collection
+
+            # Fire up the server.
+            server.listen port
+            console.log "Listening on port #{port}".green.bold
