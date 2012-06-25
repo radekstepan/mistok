@@ -187,14 +187,23 @@ authorize = (request, response, callback) ->
                 # Has cookie?
                 if key is 'mistok_app' then return value
 
+    # A cookie?
     if cookie?
+        # A worthy cookie?
+        try
+            id = mongodb.ObjectID.createFromHexString cookie
+        catch err
+            return redirect()
+
+        # A valid cookie?
         db.users.findOne
-            '_id': mongodb.ObjectID.createFromHexString cookie
+            '_id': id
         , (err, user) ->
             return redirect() if err or not user
 
             console.log "User #{cookie} authorized".yellow
             callback user
+    
     else redirect()
 
 # -------------------------------------------------------------------
