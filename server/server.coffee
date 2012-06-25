@@ -19,7 +19,7 @@ else
     port = 1116
     host = '127.0.0.1:1116'
 
-db = require("mongojs").connect "localhost:27017/mistok", [ "users", "messages" ]
+db = require("mongodb").connect "localhost:27017/mistok", [ "users", "messages" ]
 
 hex = -> (((1 + Math.random()) * 0x10000) | 0).toString(16).substring 1
 
@@ -32,66 +32,77 @@ router.get = (route, callback) -> router.routes[route] = callback
 router.get '/', (request, response) ->
     authorize request, response, (user) ->
 
-        console.log user
+        # Fetch the full log.
+        db.messages.find
+            'key': user.client_key
+        , (err, log) ->
+            return log err, response if err
 
-        now = new Date()
+            # Reverse order.
+            log = log.reverse()
 
-        # Get exceptions over past 14 days.
-        fourteen = now.getTime() - 1.2096e9
-        db.messages.fetch
-            desc: 'timestamp'
-        , ((doc, key) ->
-            doc.type is 'exception' and doc.key is client_key
-        ), (error, exceptions) ->
-            return log error, response if error and error.message isnt 'No records.'
+            # Will hold exceptions of past 14 days.
+            exceptions = []
 
-            # Get the full log.
-            db.messages.fetch desc: 'timestamp', ( (doc) -> doc.key is client_key ), (error, log) ->
-                return log error, response if error and error.message isnt 'No records.'
+            # Calculate the stats.
+            now = new Date()
+            today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0).getTime()
 
-                # Calculate the stats.
-                today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0).getTime()
+            # Last 30 days in the chart.
+            chart = [0...30].map -> [ 0, 0 ]
 
-                # Last 30 days in the chart.
-                chart = [0...30].map -> [ 0, 0 ]
+            stats =
+                today:      [ 0, 0 ]
+                lastToday:  [ 0, 0 ]
+                week:       [ 0, 0 ]
+                lastWeek:   [ 0, 0 ]
+                month:      [ 0, 0 ]
+                lastMonth:  [ 0, 0 ]
+            
+            for message in log
+                type = (message.type is 'message') + 0
+                
+                if message.timestamp > today # today
+                    stats.today[type] += message.count
+                    stats.week[type] += message.count
+                    stats.month[type] += message.count
 
-                stats =
-                    today:      [ 0, 0 ]
-                    lastToday:  [ 0, 0 ]
-                    week:       [ 0, 0 ]
-                    lastWeek:   [ 0, 0 ]
-                    month:      [ 0, 0 ]
-                    lastMonth:  [ 0, 0 ]
-                for message in log
-                    type = (message.type is 'message') + 0
-                    if message.timestamp > today # today
-                        stats.today[type] += message.count
-                        stats.week[type] += message.count
-                        stats.month[type] += message.count
-                    else if message.timestamp > today - 8.64e7 # yesterday
-                        stats.lastToday[type] += message.count
-                        stats.week[type] += message.count
-                        stats.month[type] += message.count
-                    else if message.timestamp > today - 6.048e8 # this week
-                        stats.week[type] += message.count
-                        stats.month[type] += message.count
-                    else if message.timestamp > today - 1.2096e9 # last week
-                        stats.lastWeek[type] += message.count
-                        stats.month[type] += message.count
-                    else if message.timestamp > today - 2.592e9 # this month (assume 30)
-                        stats.month[type] += message.count
-                    else if message.timestamp > today - 5.184e9 # last month (assume 30)
-                        stats.lastMonth[type] += message.count
+                    if message.type is 'exception' then exceptions.push message
+                
+                else if message.timestamp > today - 8.64e7 # yesterday
+                    stats.lastToday[type] += message.count
+                    stats.week[type] += message.count
+                    stats.month[type] += message.count
 
-                    # And also position it in the chart.
-                    idx = Math.floor((today + 8.64e7 - message.timestamp) / 8.64e7)
-                    chart[idx]?[type] += message.count
+                    if message.type is 'exception' then exceptions.push message
 
-                render request, response, 'dashboard',
-                    'log':        log
-                    'stats':      stats
-                    'chart':      chart
-                    'exceptions': exceptions
+                else if message.timestamp > today - 6.048e8 # this week
+                    stats.week[type] += message.count
+                    stats.month[type] += message.count
+
+                    if message.type is 'exception' then exceptions.push message
+
+                else if message.timestamp > today - 1.2096e9 # last week
+                    stats.lastWeek[type] += message.count
+                    stats.month[type] += message.count
+
+                    if message.type is 'exception' then exceptions.push message
+
+                else if message.timestamp > today - 2.592e9 # this month (assume 30)
+                    stats.month[type] += message.count
+                
+                else if message.timestamp > today - 5.184e9 # last month (assume 30)
+                    stats.lastMonth[type] += message.count
+
+                # And also position it in the chart.
+                idx = Math.floor((today + 8.64e7 - message.timestamp) / 8.64e7)
+                chart[idx]?[type] += message.count
+
+            render request, response, 'dashboard',
+                'log':        log
+                'stats':      stats
+                'chart':      chart
+                'exceptions': exceptions
 
 # Receive message.
 router.get '/message', (request, response) ->
@@ -107,27 +118,34 @@ router.get '/message', (request, response) ->
 
     # Do we have the same message from upto an hour ago?
     hour = message.timestamp - 3.6e6
-    db.messages.fetch
-        desc: 'timestamp'
-        limit: 1
-    , ((doc, key) ->
-        (doc.timestamp >= hour and doc.type is message.type and doc.body is message.body and doc.url is message.url and doc.line is message.line and doc.browser is message.browser)
-    ), (error, results) ->
-        return log error, response if error and error.message isnt 'No records.'
+    db.messages.findOne
+        'timestamp':
+            $gt: hour
+        'url':     message.url
+        'type':    message.type
+        'body':    message.body
+        'line':    message.line
+        'browser': message.browser
+        'key':     message.key
+    , (err, existing) ->
+        return log err, response if err
 
         # Update an existing record.
-        for result in results
-            return db.messages.update(result._key,
-                count: result.count + 1
-            , (error) ->
-                return log error, response if error
+        if existing?
+            db.messages.update
+                _id: existing._id
+            ,
+                $inc:
+                    count: 1
+            ,
+                multi: true
+            , (err) ->
+                return log err, response if err
                 response.end()
-            )
-
-        # Make a new record.
-        db.messages.guid (key) ->
-            db.messages.set key, message, (error) ->
-                return log error, response if error
+        else
+            # Make a new record.
+            db.messages.save message, (err, saved) ->
+                return log err, response if err or not saved
                 response.end()
 
 # Delete a message.
@@ -138,38 +156,28 @@ router.get '/delete', (request, response) ->
 
     message = (urlib.parse(request.url, true).query)?.message
 
-    if not message? then die()
+    if not message? or message.length is 0 then die()
 
     authorize request, response, (user) ->
-        # Get the client_key for our user.
-        db.users.fetch limit:1, ( (doc, key) -> key is user ), (error, users) ->
-            return log error, response if error
 
-            # Now remove the message in question provided it exists and we are associated with it.
-            db.messages.fetch limit:1, ( (doc, key) ->
-                key is message and doc.key is users[0].client_key
-            ), (error, messages) ->
-                if error or messages.length isnt 1 then return die()
-
-                # Actually remove.
-                db.messages.remove messages[0]._key, (error) ->
-                    if error then return die()
-
-                    # Redir to index.
-                    response.writeHead 302,
-                        Location: "http://#{host}/"
-                    response.end()
+        # Now remove the message in question provided it exists and we are associated with it.
+        db.messages.findOne
+            '_id': db.ObjectId message
+            'key': user.client_key
+        , (err, message) ->
+            if message then db.messages.remove message._id, ->        
+                # Redir to index.
+                response.writeHead 302,
+                    Location: "http://#{host}/"
+                response.end()
+            else die()
 
 # Documentation.
 router.get '/documentation', (request, response) ->
     authorize request, response, (user) ->
-        # Get the associated user's client_key
-        db.users.fetch limit:1, ( (doc, key) -> key is user ), (error, results) ->
-            return log error, response if error
-
-            render request, response, 'documentation',
-                'user': results[0]
-                'host': host
+        render request, response, 'documentation',
+            'user': user
+            'host': host
 
 # Logout.
 router.get '/logout', (request, response) ->
@@ -195,7 +203,7 @@ authorize = (request, response, callback) ->
     
     if cookie?
         db.users.findOne
-            _id: cookie
+            '_id': db.ObjectId cookie
         , (err, user) ->
             return redirect() if err or not user
 
@@ -239,20 +247,20 @@ router.get '/openid/verify', (request, response) ->
 
             # Do we already have this user?
             db.users.findOne
-                identity: identity
-            , (err, users) ->
-                if err or not users
+                'identity': identity
+            , (err, user) ->
+                if err or not user
                     # Insert new user.
                     db.users.save
-                        identity:   identity
-                        client_key: "#{hex()}-#{hex()}-#{hex()}"
-                    , (error, saved) ->
-                        return log error, response if error or not saved
+                        'identity':   identity
+                        'client_key': "#{hex()}-#{hex()}-#{hex()}"
+                    , (err, saved) ->
+                        return log err, response if err or not saved
 
                         saveCookie saved, response
                 else
                     # We have a user. Cookie their key.
-                    saveCookie users[0]._id, response
+                    saveCookie user._id, response
 
         else response.end()
 

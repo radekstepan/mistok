@@ -23,7 +23,7 @@ $ npm install -d
 3. `url` (node stdlib) for parsing request params.
 4. `http` (node stdlib) for listening to your request-y music.
 5. `util` (node stdlib) for pump streaming files.
-6. [mongojs](https://github.com/gett/mongojs) for connecting to MongoDB API.
+6. [mongodb](http://mongodb.github.com/node-mongodb-native) a MongoDB driver.
 7. [eco](https://github.com/sstephenson/eco) for embedding CoffeeScript in HTML templates.
 8. [less](http://http://lesscss.org) for extending CSS with mixins, variables, functions and the like.
 9. [openid](https://github.com/havard/node-openid) for a working OpenID client implementation.

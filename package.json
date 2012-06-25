@@ -18,7 +18,7 @@
     "tiny": "0.0.x",
     "ua-parser": "0.2.x",
     "eco": "latest",
-    "mongojs": "latest"
+    "mongodb": "latest"
   },
   "private": true,
   "repository": {
