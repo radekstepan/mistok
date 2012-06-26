@@ -373,34 +373,30 @@ server = http.createServer (request, response) ->
             if file[-9...] is '.less.css'
                 css request, response, file.replace('.less.css', '.less')
             else
-                # Data folder?
-                if url[0...5] is '/data'
-                    log { 'message': 'Access forbidden' }, response
-                else
-                    fs.stat file, (err, stat) ->
-                        if err
-                            # 404.
-                            console.log "#{url} not found".red
-                            response.writeHead 404
+                fs.stat file, (err, stat) ->
+                    if err
+                        # 404.
+                        console.log "#{url} not found".red
+                        response.writeHead 404
+                        response.end()
+                    else
+                        # Cache control.
+                        mtime = stat.mtime
+                        etag = stat.size + '-' + Date.parse(mtime)
+                        response.setHeader('Last-Modified', mtime);
+
+                        if request.headers['if-none-match'] is etag
+                            response.statusCode = 304
                             response.end()
                         else
-                            # Cache control.
-                            mtime = stat.mtime
-                            etag = stat.size + '-' + Date.parse(mtime)
-                            response.setHeader('Last-Modified', mtime);
+                            # Stream file.
+                            response.writeHead 200,
+                                'Content-Type':   mime.lookup file
+                                'Content-Length': stat.size
+                                'ETag':           etag
 
-                            if request.headers['if-none-match'] is etag
-                                response.statusCode = 304
-                                response.end()
-                            else
-                                # Stream file.
-                                response.writeHead 200,
-                                    'Content-Type':   mime.lookup file
-                                    'Content-Length': stat.size
-                                    'ETag':           etag
-
-                                util.pump fs.createReadStream(file), response, (err) ->
-                                    return log err, response if err
+                            util.pump fs.createReadStream(file), response, (err) ->
+                                return log err, response if err
     
     else log { 'message': 'No matching route' }, response
 
