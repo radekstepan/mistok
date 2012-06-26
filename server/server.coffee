@@ -80,7 +80,7 @@ router.get '/', (request, response) ->
             stream = collection.find(
                 'key': user.client_key
             ,
-                'sort': [ "timestamp", "desc" ]
+                'sort': [ [ "timestamp", "desc" ] ]
             ).streamRecords()
             
             stream.on "data", (message) ->
