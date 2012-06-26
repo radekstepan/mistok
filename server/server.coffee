@@ -32,7 +32,7 @@ if process.env.PORT? # Heroku
         db.authenticate process.env.MONGOHQ_USER, process.env.MONGOHQ_PASSWORD, (err) ->
             throw err.message.red if err
 
-            startup db
+            startup()
 
 else # Local development.
     port = CONFIG.development.port
@@ -45,7 +45,7 @@ else # Local development.
     db.open (err, db) ->
         throw err.message.red if err
 
-        startup db
+        startup()
 
 # -------------------------------------------------------------------
 # Routes.
@@ -76,62 +76,63 @@ router.get '/', (request, response) ->
             lastMonth:  [ 0, 0 ]
 
         # Stream it.
-        stream = db.messages.find(
-            'key': user.client_key
-        ,
-            'sort': [ "timestamp", "desc" ]
-        ).streamRecords()
-        
-        stream.on "data", (message) ->
-            # Save to log.
-            log.push message
-
-            # What type?
-            type = (message.type is 'message') + 0
-
-            # Position in stats.
-            if message.timestamp > today # today
-                stats.today[type] += message.count
-                stats.week[type] += message.count
-                stats.month[type] += message.count
-
-                if message.type is 'exception' then exceptions.push message
+        messages response, (collection) ->
+            stream = collection.find(
+                'key': user.client_key
+            ,
+                'sort': [ "timestamp", "desc" ]
+            ).streamRecords()
             
-            else if message.timestamp > today - 8.64e7 # yesterday
-                stats.lastToday[type] += message.count
-                stats.week[type] += message.count
-                stats.month[type] += message.count
+            stream.on "data", (message) ->
+                # Save to log.
+                log.push message
 
-                if message.type is 'exception' then exceptions.push message
+                # What type?
+                type = (message.type is 'message') + 0
 
-            else if message.timestamp > today - 6.048e8 # this week
-                stats.week[type] += message.count
-                stats.month[type] += message.count
+                # Position in stats.
+                if message.timestamp > today # today
+                    stats.today[type] += message.count
+                    stats.week[type] += message.count
+                    stats.month[type] += message.count
 
-                if message.type is 'exception' then exceptions.push message
+                    if message.type is 'exception' then exceptions.push message
+                
+                else if message.timestamp > today - 8.64e7 # yesterday
+                    stats.lastToday[type] += message.count
+                    stats.week[type] += message.count
+                    stats.month[type] += message.count
 
-            else if message.timestamp > today - 1.2096e9 # last week
-                stats.lastWeek[type] += message.count
-                stats.month[type] += message.count
+                    if message.type is 'exception' then exceptions.push message
 
-                if message.type is 'exception' then exceptions.push message
+                else if message.timestamp > today - 6.048e8 # this week
+                    stats.week[type] += message.count
+                    stats.month[type] += message.count
 
-            else if message.timestamp > today - 2.592e9 # this month (assume 30)
-                stats.month[type] += message.count
-            
-            else if message.timestamp > today - 5.184e9 # last month (assume 30)
-                stats.lastMonth[type] += message.count
+                    if message.type is 'exception' then exceptions.push message
 
-            # And also position it in the chart.
-            idx = Math.floor((today + 8.64e7 - message.timestamp) / 8.64e7)
-            chart[idx]?[type] += message.count
+                else if message.timestamp > today - 1.2096e9 # last week
+                    stats.lastWeek[type] += message.count
+                    stats.month[type] += message.count
 
-        stream.on "end", ->
-            render request, response, 'dashboard',
-                'log':        log
-                'stats':      stats
-                'chart':      chart
-                'exceptions': exceptions
+                    if message.type is 'exception' then exceptions.push message
+
+                else if message.timestamp > today - 2.592e9 # this month (assume 30)
+                    stats.month[type] += message.count
+                
+                else if message.timestamp > today - 5.184e9 # last month (assume 30)
+                    stats.lastMonth[type] += message.count
+
+                # And also position it in the chart.
+                idx = Math.floor((today + 8.64e7 - message.timestamp) / 8.64e7)
+                chart[idx]?[type] += message.count
+
+            stream.on "end", ->
+                render request, response, 'dashboard',
+                    'log':        log
+                    'stats':      stats
+                    'chart':      chart
+                    'exceptions': exceptions
 
 # Receive message.
 router.get '/message', (request, response) ->
@@ -147,30 +148,31 @@ router.get '/message', (request, response) ->
 
     # Do we have the same message from upto an hour ago?
     hour = message.timestamp - 3.6e6
-    db.messages.findOne
-        'timestamp':
-            $gt: hour
-        'url':     message.url
-        'type':    message.type
-        'body':    message.body
-        'line':    message.line
-        'browser': message.browser
-        'key':     message.key
-    , (err, existing) ->
-        return log err, response if err
+    messages response, (collection) ->
+        collection.findOne
+            'timestamp':
+                $gt: hour
+            'url':     message.url
+            'type':    message.type
+            'body':    message.body
+            'line':    message.line
+            'browser': message.browser
+            'key':     message.key
+        , (err, existing) ->
+            return log err, response if err
 
-        # Update an existing record, don't care if you do it.
-        if existing?
-            db.messages.update
-                '_id': existing._id
-            ,
-                '$inc':
-                    'count': 1
-            response.end()
-        else
-            # Make a new record, fire & forget.
-            db.messages.insert message
-            response.end()
+            # Update an existing record, don't care if you do it.
+            if existing?
+                collection.update
+                    '_id': existing._id
+                ,
+                    '$inc':
+                        'count': 1
+                response.end()
+            else
+                # Make a new record, fire & forget.
+                collection.insert message
+                response.end()
 
 # Delete a message.
 router.get '/delete', (request, response) ->
@@ -182,17 +184,25 @@ router.get '/delete', (request, response) ->
 
     if not message? or message.length is 0 then die()
 
+    # Authorize.
     authorize request, response, (user) ->
 
+        # A good message id?
+        try
+            id = mongodb.ObjectID.createFromHexString message
+        catch err
+            return die()
+
         # Now maybe remove the message in question provided it exists and we are associated with it.
-        db.messages.remove
-            '_id': mongodb.ObjectID.createFromHexString message
-            'key': user.client_key
-        
-        # Redir to index.
-        response.writeHead 302,
-            Location: "http://#{host}/"
-        response.end()
+        messages response, (collection) ->
+            collection.remove
+                '_id': id
+                'key': user.client_key
+            
+            # Redir to index.
+            response.writeHead 302,
+                Location: "http://#{host}/"
+            response.end()
 
 # Documentation.
 router.get '/documentation', (request, response) ->
@@ -232,13 +242,14 @@ authorize = (request, response, callback) ->
             return redirect()
 
         # A valid cookie?
-        db.users.findOne
-            '_id': id
-        , (err, user) ->
-            return redirect() if err or not user
+        users response, (collection) ->
+            collection.findOne
+                '_id': id
+            , (err, user) ->
+                return redirect() if err or not user
 
-            console.log "User #{cookie} authorized".yellow
-            callback user
+                console.log "User #{cookie} authorized".yellow
+                callback user
     
     else redirect()
 
@@ -277,23 +288,24 @@ router.get '/openid/verify', (request, response) ->
                 response.end "<script>window.location='http://#{host}/'</script>"
 
             # Do we already have this user?
-            db.users.findOne
-                'identity': identity
-            , (err, user) ->
-                if err or not user
-                    # Insert new user.
-                    db.users.insert
-                        'identity':   identity
-                        'client_key': "#{hex()}-#{hex()}-#{hex()}"
-                    ,
-                        'safe': true
-                    , (err, saved) ->
-                        return log err, response if err or not saved
+            users response, (collection) ->
+                collection.findOne
+                    'identity': identity
+                , (err, user) ->
+                    if err or not user
+                        # Insert new user.
+                        collection.insert
+                            'identity':   identity
+                            'client_key': "#{hex()}-#{hex()}-#{hex()}"
+                        ,
+                            'safe': true
+                        , (err, saved) ->
+                            return log err, response if err or not saved
 
-                        saveCookie saved, response
-                else
-                    # We have a user. Cookie their key.
-                    saveCookie user._id, response
+                            saveCookie saved, response
+                    else
+                        # We have a user. Cookie their key.
+                        saveCookie user._id, response
 
         else response.end()
 
@@ -401,16 +413,21 @@ server = http.createServer (request, response) ->
     
     else log { 'message': 'No matching route' }, response
 
+# -------------------------------------------------------------------
+# Database helpers.
 hex = -> (((1 + Math.random()) * 0x10000) | 0).toString(16).substring 1
+
+messages = (response, cb) -> db.collection 'messages', (err, collection) ->
+    return log err, response if err
+    cb collection
+
+users = (response, cb) -> db.collection 'users', (err, collection) ->
+    return log err, response if err
+    cb collection
 
 # -------------------------------------------------------------------
 # Fire up the server.
-startup = (db) ->
-    db.createCollection "messages", (err, collection) ->
-        db.messages = collection
-        db.createCollection "messages", (err, collection) ->
-            db.users = collection
-
-            # Fire up the server.
-            server.listen port
-            console.log "Listening on port #{port}".green.bold
+startup = ->
+    # Fire up the server.
+    server.listen port
+    console.log "Listening on port #{port}".green.bold
