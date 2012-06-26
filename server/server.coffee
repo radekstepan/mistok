@@ -146,33 +146,24 @@ router.get '/message', (request, response) ->
         "Content-Type":   "image/png"
         "Content-Length": 0
 
-    # Do we have the same message from upto an hour ago?
-    hour = message.timestamp - 3.6e6
     messages response, (collection) ->
-        collection.findOne
+        # Update an existing message from upto an hour ago...
+        collection.findAndModify
             'timestamp':
-                $gt: hour
+                '$gt': message.timestamp - 3.6e6
             'url':     message.url
             'type':    message.type
             'body':    message.body
             'line':    message.line
             'browser': message.browser
             'key':     message.key
-        , (err, existing) ->
-            return log err, response if err
-
-            # Update an existing record, don't care if you do it.
-            if existing?
-                collection.update
-                    '_id': existing._id
-                ,
-                    '$inc':
-                        'count': 1
-                response.end()
-            else
-                # Make a new record, fire & forget.
-                collection.insert message
-                response.end()
+        , [ ],
+            '$inc':
+                'count': 1
+        , {}, (err, object) ->
+            # ...or make a new record if possible.
+            collection.insert message unless object?
+            response.end()
 
 # Delete a message.
 router.get '/delete', (request, response) ->
