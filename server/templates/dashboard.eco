@@ -116,10 +116,10 @@
                                             <td>
                                                 <%= exception.body %>
                                                 <ul>
-                                                    <% if message.url: %>
+                                                    <% if exception.url: %>
                                                         <li><%= exception.url %></li>
                                                     <% end %>
-                                                    <% if message.line: %>
+                                                    <% if exception.line: %>
                                                         <li>line <%= exception.line %></li>
                                                     <% end %>
                                                 </ul>
