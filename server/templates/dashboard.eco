@@ -116,8 +116,12 @@
                                             <td>
                                                 <%= exception.body %>
                                                 <ul>
-                                                    <li><%= exception.url %></li>
-                                                    <li>line <%= exception.line %></li>
+                                                    <% if message.url: %>
+                                                        <li><%= exception.url %></li>
+                                                    <% end %>
+                                                    <% if message.line: %>
+                                                        <li>line <%= exception.line %></li>
+                                                    <% end %>
                                                 </ul>
                                             </td>
                                             <td><a class="btn btn-mini" href="/delete?message=<%= exception._id %>">Remove</a></td>
@@ -151,7 +155,12 @@
                                             <td>
                                                 <%= message.body %>
                                                 <% if message.type is 'exception': %>
-                                                    at <span class="url"><%= message.url %></span> on line <span class="line"><%= message.line %></span>
+                                                    <% if message.url: %>
+                                                        at <span class="url"><%= message.url %></span>
+                                                    <% end %>
+                                                    <% if message.line: %>
+                                                        on line <span class="line"><%= message.line %></span>
+                                                    <% end %>
                                                 <% end %>
                                             </td>
                                             <td><a class="btn btn-mini" href="/delete?message=<%= message._id %>">Remove</a></td>
