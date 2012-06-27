@@ -61,39 +61,6 @@
 
                                 <div class="svg"></div>
                             </article>
-                            
-                            <article id="exceptions">
-                                <header><h3>Exceptions over last 14 days</h3></header>
-
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Browser</th>
-                                            <th>Body</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <% for exception in @exceptions: %>
-                                            <tr>
-                                                <td><%= exception.count %></td>
-                                                <td>
-                                                    <span class="browser big <%= exception.browser %>"></span>
-                                                </td>
-                                                <td>
-                                                    <%= exception.body %>
-                                                    <ul>
-                                                        <li><%= exception.url %></li>
-                                                        <li>line <%= exception.line %></li>
-                                                    </ul>
-                                                </td>
-                                                <td><a class="btn btn-mini" href="/delete?message=<%= exception._id %>">Remove</a></td>
-                                            </tr>
-                                        <% end %>
-                                    </tbody>
-                                </table>
-                            </article>
                         </div>
                         
                         <div class="float right">
@@ -126,6 +93,39 @@
                                 </table>
                             </article>
                         </div>
+
+                        <article id="exceptions" class="float full">
+                            <header><h3>Exceptions over last 14 days</h3></header>
+
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Browser</th>
+                                        <th>Body</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% for exception in @exceptions: %>
+                                        <tr>
+                                            <td><%= exception.count %></td>
+                                            <td>
+                                                <span class="browser big <%= exception.browser %>"></span>
+                                            </td>
+                                            <td>
+                                                <%= exception.body %>
+                                                <ul>
+                                                    <li><%= exception.url %></li>
+                                                    <li>line <%= exception.line %></li>
+                                                </ul>
+                                            </td>
+                                            <td><a class="btn btn-mini" href="/delete?message=<%= exception._id %>">Remove</a></td>
+                                        </tr>
+                                    <% end %>
+                                </tbody>
+                            </table>
+                        </article>
 
                         <article id="logs" class="float full">
                             <header><h3>Full Logs</h3></header>
