@@ -125,14 +125,6 @@
                                     </tbody>
                                 </table>
                             </article>
-
-                            <article id="email">
-                                <header><h3>Email Notifiers</h3></header>
-                            </article>
-                            
-                            <article id="whitelist">
-                                <header><h3>Whitelist Regexps</h3></header>
-                            </article>
                         </div>
 
                         <article id="logs" class="float full">
@@ -153,7 +145,7 @@
                                     <% for message in @log: %>
                                         <tr>
                                             <td><%= message.count %></td>
-                                            <td><%= new Date(parseInt(message.timestamp)).pretty() %></td>
+                                            <td><span class="date"><%= new Date(parseInt(message.timestamp)).pretty() %></span></td>
                                             <td><span class="type <%= message.type %>"><%= message.type %></span></td>
                                             <td><span class="browser small <%= message.browser %>"></span></td>
                                             <td>
