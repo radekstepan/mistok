@@ -117,7 +117,7 @@ header#top { background:#C13536; color:#999; padding:10px; box-shadow:inset 0 -5
     &.big { width:32px; height:32px;
         &:after { margin:9px 0 0 36px; display:block; font-size:10px; content:'?'; }
         
-        &.chrome, &.chromium, &.firefox, &.opera, &.safari, &.explorer { background-image:url('../img/browsers-32px.png'); }
+        &.chrome, &.chromium, &.firefox, &.opera, &.safari, &.explorer, &.ie { background-image:url('../img/browsers-32px.png'); }
 
         &.chrome, &.chromium { background-position:-2px 0;
             &:after { content:'Chrome'; }
@@ -131,14 +131,14 @@ header#top { background:#C13536; color:#999; padding:10px; box-shadow:inset 0 -5
         &.safari { background-position:-108px 0;
             &:after { content:'Safari'; }
         }
-        &.explorer { background-position:-142px 0;
+        &.explorer, &.ie { background-position:-142px 0;
             &:after { content:'Explorer'; }
         }
     }
     &.small { width:16px; height:16px;
         &:after { margin:0px 0 0 20px; display:block; font-size:10px; content:'?'; }
 
-        &.chrome, &.chromium, &.firefox, &.opera, &.safari, &.explorer { background-image:url('../img/browsers-16px.png'); }
+        &.chrome, &.chromium, &.firefox, &.opera, &.safari, &.explorer, &.ie { background-image:url('../img/browsers-16px.png'); }
 
         &.chrome, &.chromium { background-position:-2px 0;
             &:after { content:'Chrome'; }
@@ -152,7 +152,7 @@ header#top { background:#C13536; color:#999; padding:10px; box-shadow:inset 0 -5
         &.safari { background-position:-54px 0;
             &:after { content:'Safari'; }
         }
-        &.explorer { background-position:-70px 0;
+        &.explorer, &.ie { background-position:-70px 0;
             &:after { content:'Explorer'; }
         }
     }
