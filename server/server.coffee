@@ -137,7 +137,7 @@ router.get '/', (request, response) ->
                     return r if (r = sortBy key, a, b) for key in keys
                     return 0
 
-                exceptions.sort (a, b) -> sortByMultiple a, b, ['body', 'line', 'url', 'browser']
+                exceptions.sort (a, b) -> sortByMultiple a, b, ['browser', 'url', 'line', 'body']
 
                 render request, response, 'dashboard',
                     'log':        log
