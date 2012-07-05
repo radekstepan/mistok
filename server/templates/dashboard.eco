@@ -95,7 +95,7 @@
                         </div>
 
                         <article id="exceptions" class="float full">
-                            <header><h3>Exceptions over last 14 days</h3></header>
+                            <header><h3>Exceptions over the last week</h3></header>
 
                             <table class="table">
                                 <thead>
