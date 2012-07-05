@@ -109,6 +109,8 @@ router.get '/', (request, response) ->
                     stats.week[type] += message.count
                     stats.month[type] += message.count
 
+                    if message.type is 'exception' then exceptions.push message
+
                 else if message.timestamp > today - 1.2096e9 # last week
                     stats.lastWeek[type] += message.count
                     stats.month[type] += message.count
