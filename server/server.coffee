@@ -109,13 +109,9 @@ router.get '/', (request, response) ->
                     stats.week[type] += message.count
                     stats.month[type] += message.count
 
-                    if message.type is 'exception' then exceptions.push message
-
                 else if message.timestamp > today - 1.2096e9 # last week
                     stats.lastWeek[type] += message.count
                     stats.month[type] += message.count
-
-                    if message.type is 'exception' then exceptions.push message
 
                 else if message.timestamp > today - 2.592e9 # this month (assume 30)
                     stats.month[type] += message.count
@@ -128,6 +124,19 @@ router.get '/', (request, response) ->
                 chart[idx]?[type] += message.count
 
             stream.on "end", ->
+                # Custom sort exceptions.
+                sortBy = (key, a, b, r) ->
+                    r = if r then 1 else -1
+                    return -1*r if a[key] > b[key]
+                    return +1*r if a[key] < b[key]
+                    return 0
+
+                sortByMultiple = (a, b, keys) ->
+                    return r if (r = sortBy key, a, b) for key in keys
+                    return 0
+
+                exceptions.sort (a, b) -> sortByMultiple a, b, ['body', 'line', 'url', 'browser']
+
                 render request, response, 'dashboard',
                     'log':        log
                     'stats':      stats

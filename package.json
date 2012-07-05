@@ -2,7 +2,7 @@
   "name": "mistok",
   "author": "Radek <dev@radekstepan.com>",
   "subdomain": "mistok",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "engines": {
     "node": "0.6.x"
   },
